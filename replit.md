@@ -25,8 +25,9 @@ The application follows a full-stack TypeScript architecture with clear separati
 - **Runtime**: Node.js with Express.js
 - **Language**: TypeScript with ES modules
 - **Database ORM**: Drizzle ORM for type-safe database operations
-- **Database**: PostgreSQL (configured for Neon Database)
-- **Session Storage**: In-memory storage (MemStorage class) with interface for database migration
+- **Database**: PostgreSQL (Neon Database with connection pooling)
+- **Storage Layer**: DatabaseStorage class implementing full CRUD operations for all entities
+- **API Layer**: RESTful endpoints for projects, samples, and arrangements with Zod validation
 
 ## Key Components
 
@@ -56,8 +57,11 @@ The application follows a full-stack TypeScript architecture with clear separati
 4. **Export Process**: Selected samples + arrangement → ZIP generation → Download
 
 ### Database Schema
-- **Users Table**: Basic user authentication (id, username, password)
-- **Extensible Design**: Schema ready for sample storage, user projects, and session management
+- **Users Table**: Basic user authentication (id, username, password, createdAt)
+- **Audio Projects Table**: Project storage (id, userId, name, filename, duration, size, extractionSettings, createdAt, updatedAt)
+- **Audio Samples Table**: Sample metadata storage (id, projectId, name, startTime, endTime, duration, waveform, createdAt)
+- **Arrangements Table**: Timeline arrangements (id, projectId, name, bpm, samples, createdAt, updatedAt)
+- **Full Relations**: Proper foreign key relationships between all tables with Drizzle ORM relations
 
 ## External Dependencies
 
