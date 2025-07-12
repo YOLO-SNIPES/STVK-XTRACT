@@ -15,13 +15,25 @@ interface SampleExtractionProps {
 export default function SampleExtraction({ samples, setSamples, isProcessing }: SampleExtractionProps) {
   return (
     <Card className="cyber-card rounded-lg p-6">
-      <h2 className="text-xl font-bold mb-4 text-[hsl(328,100%,50%)] neon-text">
-        SAMPLE EXTRACTION MATRIX
+      <h2 
+        className="text-xl font-bold mb-6 text-[hsl(328,100%,50%)] neon-text glitch-word"
+        data-text="SAMPLE EXTRACTION MATRIX"
+      >
+        <span className="glitch-word" data-text="SAMPLE">SAMPLE</span>{" "}
+        <span className="glitch-word" data-text="EXTRACTION">EXTRACTION</span>{" "}
+        <span className="glitch-word" data-text="MATRIX">MATRIX</span>
       </h2>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Extraction Controls */}
         <div>
-          <h3 className="text-lg font-bold mb-3 text-[hsl(24,100%,50%)]">AI PROCESSING PARAMETERS</h3>
+          <h3 
+            className="text-lg font-bold mb-4 text-[hsl(24,100%,50%)] glitch-word"
+            data-text="AI PROCESSING PARAMETERS"
+          >
+            <span className="glitch-word" data-text="AI">AI</span>{" "}
+            <span className="glitch-word" data-text="PROCESSING">PROCESSING</span>{" "}
+            <span className="glitch-word" data-text="PARAMETERS">PARAMETERS</span>
+          </h3>
           <div className="space-y-4">
             <div>
               <Label className="block text-sm font-mono text-[hsl(141,100%,59%)] mb-2">

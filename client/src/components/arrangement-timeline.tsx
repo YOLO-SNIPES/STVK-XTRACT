@@ -26,8 +26,12 @@ export default function ArrangementTimeline({ samples, arrangement, setArrangeme
 
   return (
     <Card className="cyber-card rounded-lg p-6">
-      <h2 className="text-xl font-bold mb-4 text-[hsl(328,100%,50%)] neon-text">
-        ARRANGEMENT TIMELINE
+      <h2 
+        className="text-xl font-bold mb-6 text-[hsl(328,100%,50%)] neon-text glitch-word"
+        data-text="ARRANGEMENT TIMELINE"
+      >
+        <span className="glitch-word" data-text="ARRANGEMENT">ARRANGEMENT</span>{" "}
+        <span className="glitch-word" data-text="TIMELINE">TIMELINE</span>
       </h2>
       <div className="bg-[hsl(0,0%,10%)] rounded-lg p-4 min-h-40">
         <div className="flex justify-between items-center mb-4">

@@ -56,8 +56,12 @@ export default function ExportControls({ samples, arrangement }: ExportControlsP
 
   return (
     <Card className="cyber-card rounded-lg p-6">
-      <h2 className="text-xl font-bold mb-4 text-[hsl(328,100%,50%)] neon-text">
-        EXPORT PROTOCOL
+      <h2 
+        className="text-xl font-bold mb-6 text-[hsl(328,100%,50%)] neon-text glitch-word"
+        data-text="EXPORT PROTOCOL"
+      >
+        <span className="glitch-word" data-text="EXPORT">EXPORT</span>{" "}
+        <span className="glitch-word" data-text="PROTOCOL">PROTOCOL</span>
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>

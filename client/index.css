@@ -98,6 +98,8 @@
       inset 0 0 15px hsla(141, 100%, 59%, 0.05);
     position: relative;
     overflow: hidden;
+    margin-bottom: 2rem;
+    animation: card-pulse 4s ease-in-out infinite;
   }
 
   .cyber-card::before {
@@ -153,6 +155,75 @@
 
   .glitch-text {
     animation: glitch 2s infinite;
+    position: relative;
+  }
+
+  .glitch-text::before,
+  .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .glitch-text::before {
+    animation: glitch-red 1.5s infinite;
+    color: #ff0080;
+    z-index: -1;
+  }
+
+  .glitch-text::after {
+    animation: glitch-blue 2.5s infinite;
+    color: #00ff88;
+    z-index: -2;
+  }
+
+  .glitch-title {
+    animation: glitch-title 3s infinite;
+    position: relative;
+    display: inline-block;
+  }
+
+  .glitch-title::before,
+  .glitch-title::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .glitch-title::before {
+    animation: glitch-title-red 2s infinite;
+    color: #ff0080;
+    z-index: -1;
+    clip-path: polygon(0 20%, 100% 20%, 100% 21%, 0 21%);
+  }
+
+  .glitch-title::after {
+    animation: glitch-title-blue 2.3s infinite;
+    color: #00ff88;
+    z-index: -2;
+    clip-path: polygon(0 60%, 100% 60%, 100% 61%, 0 61%);
+  }
+
+  .glitch-word {
+    animation: glitch-word 1.8s infinite;
+    position: relative;
+    display: inline-block;
+  }
+
+  .glitch-word::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: glitch-word-shift 2.1s infinite;
+    color: #ff6600;
+    z-index: -1;
   }
 
   .waveform-container {
@@ -214,6 +285,129 @@
   80% { transform: translate(1px, -1px); }
 }
 
+@keyframes glitch-red {
+  0%, 90%, 100% { transform: translate(0); clip-path: polygon(0 20%, 100% 20%, 100% 21%, 0 21%); }
+  10% { transform: translate(-2px, 1px); }
+  20% { transform: translate(2px, -1px); clip-path: polygon(0 60%, 100% 60%, 100% 61%, 0 61%); }
+  30% { transform: translate(-1px, 2px); }
+  40% { transform: translate(1px, -2px); clip-path: polygon(0 10%, 100% 10%, 100% 15%, 0 15%); }
+  50% { transform: translate(-2px, -1px); }
+  60% { transform: translate(2px, 1px); clip-path: polygon(0 75%, 100% 75%, 100% 80%, 0 80%); }
+  70% { transform: translate(-1px, -2px); }
+  80% { transform: translate(1px, 2px); }
+}
+
+@keyframes glitch-blue {
+  0%, 85%, 100% { transform: translate(0); clip-path: polygon(0 78%, 100% 78%, 100% 83%, 0 83%); }
+  5% { transform: translate(2px, -1px); }
+  15% { transform: translate(-1px, 2px); clip-path: polygon(0 25%, 100% 25%, 100% 30%, 0 30%); }
+  25% { transform: translate(1px, 1px); }
+  35% { transform: translate(-2px, -1px); clip-path: polygon(0 50%, 100% 50%, 100% 55%, 0 55%); }
+  45% { transform: translate(2px, 2px); }
+  55% { transform: translate(-1px, -2px); clip-path: polygon(0 5%, 100% 5%, 100% 10%, 0 10%); }
+  65% { transform: translate(1px, -1px); }
+  75% { transform: translate(-2px, 1px); }
+}
+
+@keyframes glitch-title {
+  0%, 85%, 100% { 
+    transform: translate(0) scale(1); 
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  5% { 
+    transform: translate(-2px, 1px) scale(1.02); 
+    filter: hue-rotate(90deg) brightness(1.2);
+  }
+  10% { 
+    transform: translate(2px, -2px) scale(0.98); 
+    filter: hue-rotate(180deg) brightness(0.8);
+  }
+  15% { 
+    transform: translate(-1px, 2px) scale(1.01); 
+    filter: hue-rotate(270deg) brightness(1.1);
+  }
+  20% { 
+    transform: translate(1px, -1px) scale(1.03); 
+    filter: hue-rotate(45deg) brightness(1.3);
+  }
+}
+
+@keyframes glitch-title-red {
+  0%, 80%, 100% { 
+    transform: translate(0); 
+    clip-path: polygon(0 0%, 100% 0%, 100% 5%, 0 5%);
+  }
+  10% { 
+    transform: translate(-3px, 2px); 
+    clip-path: polygon(0 40%, 100% 40%, 100% 45%, 0 45%);
+  }
+  20% { 
+    transform: translate(3px, -2px); 
+    clip-path: polygon(0 80%, 100% 80%, 100% 85%, 0 85%);
+  }
+  30% { 
+    transform: translate(-2px, 3px); 
+    clip-path: polygon(0 15%, 100% 15%, 100% 20%, 0 20%);
+  }
+}
+
+@keyframes glitch-title-blue {
+  0%, 75%, 100% { 
+    transform: translate(0); 
+    clip-path: polygon(0 95%, 100% 95%, 100% 100%, 0 100%);
+  }
+  15% { 
+    transform: translate(2px, -3px); 
+    clip-path: polygon(0 60%, 100% 60%, 100% 65%, 0 65%);
+  }
+  25% { 
+    transform: translate(-3px, 2px); 
+    clip-path: polygon(0 25%, 100% 25%, 100% 30%, 0 30%);
+  }
+  35% { 
+    transform: translate(3px, 3px); 
+    clip-path: polygon(0 70%, 100% 70%, 100% 75%, 0 75%);
+  }
+}
+
+@keyframes glitch-word {
+  0%, 95%, 100% { 
+    transform: translate(0) skew(0deg); 
+    filter: brightness(1);
+  }
+  8% { 
+    transform: translate(-1px, 1px) skew(1deg); 
+    filter: brightness(1.2);
+  }
+  16% { 
+    transform: translate(1px, -1px) skew(-1deg); 
+    filter: brightness(0.9);
+  }
+  24% { 
+    transform: translate(-1px, -1px) skew(0.5deg); 
+    filter: brightness(1.1);
+  }
+}
+
+@keyframes glitch-word-shift {
+  0%, 90%, 100% { 
+    transform: translate(0); 
+    opacity: 0.7;
+  }
+  12% { 
+    transform: translate(1px, -2px); 
+    opacity: 0.5;
+  }
+  24% { 
+    transform: translate(-2px, 1px); 
+    opacity: 0.8;
+  }
+  36% { 
+    transform: translate(2px, 2px); 
+    opacity: 0.4;
+  }
+}
+
 @keyframes waveflow {
   0%, 100% { 
     filter: hue-rotate(0deg) brightness(1) drop-shadow(0 0 10px hsla(328, 100%, 50%, 0.5)); 
@@ -238,4 +432,52 @@
   50% {
     box-shadow: 0 0 20px hsla(328, 100%, 50%, 0.8), 0 0 30px hsla(141, 100%, 59%, 0.5);
   }
+}
+
+@keyframes card-pulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 15px hsla(328, 100%, 50%, 0.1),
+      inset 0 0 15px hsla(141, 100%, 59%, 0.05);
+  }
+  50% {
+    box-shadow: 
+      0 0 25px hsla(328, 100%, 50%, 0.2),
+      inset 0 0 25px hsla(141, 100%, 59%, 0.1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes data-flow {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-data-flow {
+  animation: data-flow 3s linear infinite;
+}
+
+.animate-pulse-neon {
+  animation: pulse-neon 2s ease-in-out infinite;
 }

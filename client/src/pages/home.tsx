@@ -31,22 +31,46 @@ export default function Home() {
     <div className="min-h-screen text-white">
       <div className="container mx-auto px-4 py-6 max-w-6xl">
         {/* Header */}
-        <div className="text-center mb-8 relative">
-          <h1 className="text-4xl md:text-6xl font-black mb-2 neon-text glitch-text text-[hsl(328,100%,50%)]">
+        <div className="text-center mb-12 relative">
+          <h1 
+            className="text-4xl md:text-6xl font-black mb-4 neon-text glitch-title text-[hsl(328,100%,50%)]"
+            data-text="STAK-XTRACT"
+          >
             STAK-XTRACT
           </h1>
-          <p className="text-lg md:text-xl font-bold mb-1 text-[hsl(141,100%,59%)]">
-            by YOLO SNIPES
+          <p 
+            className="text-lg md:text-xl font-bold mb-3 text-[hsl(141,100%,59%)] glitch-word"
+            data-text="by YOLO SNIPES"
+          >
+            <span className="glitch-word" data-text="by">by</span>{" "}
+            <span className="glitch-word" data-text="YOLO">YOLO</span>{" "}
+            <span className="glitch-word" data-text="SNIPES">SNIPES</span>
           </p>
-          <p className="text-sm md:text-base text-[hsl(24,100%,50%)] neon-text font-mono">
-            // AI-POWERED SAMPLE EXTRACTION PROTOCOL //
+          <p 
+            className="text-sm md:text-base text-[hsl(24,100%,50%)] neon-text font-mono glitch-text mb-6"
+            data-text="// AI-POWERED SAMPLE EXTRACTION PROTOCOL //"
+          >
+            // <span className="glitch-word" data-text="AI-POWERED">AI-POWERED</span>{" "}
+            <span className="glitch-word" data-text="SAMPLE">SAMPLE</span>{" "}
+            <span className="glitch-word" data-text="EXTRACTION">EXTRACTION</span>{" "}
+            <span className="glitch-word" data-text="PROTOCOL">PROTOCOL</span> //
           </p>
           
           {/* Status Indicator */}
-          <div className="flex justify-center items-center gap-2 mt-4">
-            <div className="w-2 h-2 bg-[hsl(141,100%,59%)] rounded-full animate-pulse"></div>
-            <span className="text-xs font-mono text-[hsl(141,100%,59%)]">SYSTEM_ONLINE</span>
-            <div className="w-2 h-2 bg-[hsl(141,100%,59%)] rounded-full animate-pulse"></div>
+          <div className="flex justify-center items-center gap-3 mb-8 animate-float">
+            <div className="w-3 h-3 bg-[hsl(141,100%,59%)] rounded-full animate-pulse shadow-lg shadow-[hsl(141,100%,59%)]/50"></div>
+            <span 
+              className="text-sm font-mono text-[hsl(141,100%,59%)] glitch-word"
+              data-text="SYSTEM_ONLINE"
+            >
+              <span className="glitch-word" data-text="SYSTEM">SYSTEM</span>_<span className="glitch-word" data-text="ONLINE">ONLINE</span>
+            </span>
+            <div className="w-3 h-3 bg-[hsl(141,100%,59%)] rounded-full animate-pulse shadow-lg shadow-[hsl(141,100%,59%)]/50"></div>
+          </div>
+          
+          {/* Data Flow Effect */}
+          <div className="absolute top-0 left-0 w-full h-1 overflow-hidden">
+            <div className="w-full h-full bg-gradient-to-r from-transparent via-[hsl(328,100%,50%)] to-transparent animate-data-flow"></div>
           </div>
           
           {/* Navigation */}
@@ -65,28 +89,29 @@ export default function Home() {
         )}
 
         {/* Footer */}
-        <footer className="mt-12 text-center">
-          <div className="cyber-card rounded-lg p-4 mb-4">
+        <footer className="mt-16 text-center">
+          <div className="cyber-card rounded-lg p-6 mb-6">
             <p className="text-sm font-mono text-gray-400">
-              STAK-XTRACT v2.0.1 | PWA ENABLED | 
-              <span className="text-[hsl(141,100%,59%)]"> OFFLINE READY</span> | 
-              © 2024 YOLO SNIPES
+              <span className="glitch-word" data-text="STAK-XTRACT">STAK-XTRACT</span> v2.0.1 | 
+              <span className="glitch-word" data-text="PWA">PWA</span> ENABLED | 
+              <span className="text-[hsl(141,100%,59%)] glitch-word" data-text="OFFLINE READY"> OFFLINE READY</span> | 
+              © 2024 <span className="glitch-word" data-text="YOLO SNIPES">YOLO SNIPES</span>
             </p>
           </div>
           
           {/* PWA Status */}
-          <div className="flex justify-center gap-4 text-xs font-mono">
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-[hsl(141,100%,59%)] rounded-full"></div>
-              <span>SERVICE_WORKER_ACTIVE</span>
+          <div className="flex justify-center gap-6 text-xs font-mono">
+            <div className="flex items-center gap-2 animate-float">
+              <div className="w-2 h-2 bg-[hsl(141,100%,59%)] rounded-full animate-pulse"></div>
+              <span className="glitch-word" data-text="SERVICE_WORKER_ACTIVE">SERVICE_WORKER_ACTIVE</span>
             </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-[hsl(188,94%,43%)] rounded-full"></div>
-              <span>CACHE_ENABLED</span>
+            <div className="flex items-center gap-2 animate-float" style={{animationDelay: '0.5s'}}>
+              <div className="w-2 h-2 bg-[hsl(188,94%,43%)] rounded-full animate-pulse"></div>
+              <span className="glitch-word" data-text="CACHE_ENABLED">CACHE_ENABLED</span>
             </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-[hsl(24,100%,50%)] rounded-full"></div>
-              <span>INSTALLABLE</span>
+            <div className="flex items-center gap-2 animate-float" style={{animationDelay: '1s'}}>
+              <div className="w-2 h-2 bg-[hsl(24,100%,50%)] rounded-full animate-pulse"></div>
+              <span className="glitch-word" data-text="INSTALLABLE">INSTALLABLE</span>
             </div>
           </div>
         </footer>

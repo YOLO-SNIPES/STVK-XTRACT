@@ -23,26 +23,29 @@ export default function NavigationTabs({
   ];
 
   return (
-    <div className="flex justify-center flex-wrap gap-2 mt-6">
-      {tabs.map((tab) => (
+    <div className="flex justify-center flex-wrap gap-3 mt-8 mb-4">
+      {tabs.map((tab, index) => (
         <Button
           key={tab.id}
           onClick={() => setActiveSection(tab.id)}
-          className={`px-4 py-2 rounded text-sm font-mono transition-colors ${
+          className={`px-4 py-3 rounded text-sm font-mono transition-all animate-float ${
             activeSection === tab.id 
               ? "cyber-button text-white" 
               : getTabVariantClasses(tab.variant)
           }`}
+          style={{animationDelay: `${index * 0.1}s`}}
         >
-          {tab.label}
+          <span className="glitch-word" data-text={tab.label}>
+            {tab.label}
+          </span>
         </Button>
       ))}
       {showInstall && (
         <Button
           onClick={onInstallPWA}
-          className="bg-gradient-to-r from-[hsl(251,91%,64%)] to-[hsl(188,94%,43%)] hover:shadow-lg text-white px-4 py-2 rounded text-sm font-mono transition-all"
+          className="bg-gradient-to-r from-[hsl(251,91%,64%)] to-[hsl(188,94%,43%)] hover:shadow-lg text-white px-4 py-3 rounded text-sm font-mono transition-all animate-pulse-neon"
         >
-          [INSTALL]
+          <span className="glitch-word" data-text="[INSTALL]">[INSTALL]</span>
         </Button>
       )}
     </div>
