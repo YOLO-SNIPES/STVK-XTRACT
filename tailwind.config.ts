@@ -11,6 +11,11 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        'neon-purple': '#8b5cf6',
+        'neon-cyan': '#06b6d4',
+        'neon-green': '#10b981',
+        'dark-card': '#1a1a1a',
+        dark: '#0a0a0a',
         background: "var(--background)",
         foreground: "var(--foreground)",
         card: {

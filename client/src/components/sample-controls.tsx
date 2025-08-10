@@ -23,62 +23,44 @@ export default function SampleExtraction({ samples, setSamples, isProcessing }: 
         <span className="glitch-word" data-text="EXTRACTION">EXTRACTION</span>{" "}
         <span className="glitch-word" data-text="MATRIX">MATRIX</span>
       </h2>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Extraction Controls */}
-        <div>
+        <div className="lg:col-span-1">
           <h3 
             className="text-lg font-bold mb-4 text-[hsl(24,100%,50%)] glitch-word"
             data-text="AI PROCESSING PARAMETERS"
           >
-            <span className="glitch-word" data-text="AI">AI</span>{" "}
-            <span className="glitch-word" data-text="PROCESSING">PROCESSING</span>{" "}
-            <span className="glitch-word" data-text="PARAMETERS">PARAMETERS</span>
+            AI PROCESSING PARAMETERS
           </h3>
           <div className="space-y-4">
             <div>
               <Label className="block text-sm font-mono text-[hsl(141,100%,59%)] mb-2">
-                SENSITIVITY THRESHOLD
+                ANALYSIS_TYPE
               </Label>
-              <Slider
-                defaultValue={[75]}
-                max={100}
-                step={1}
-                className="w-full"
-              />
-              <div className="flex justify-between text-xs text-gray-400 mt-1">
-                <span>LOW</span>
-                <span className="text-[hsl(141,100%,59%)] font-mono">75%</span>
-                <span>HIGH</span>
-              </div>
-            </div>
-            
-            <div>
-              <Label className="block text-sm font-mono text-[hsl(141,100%,59%)] mb-2">
-                MINIMUM DURATION (MS)
-              </Label>
-              <Input
-                type="number"
-                defaultValue={500}
-                min={100}
-                max={5000}
-                step={100}
-                className="bg-[hsl(0,0%,10%)] border border-[hsl(141,100%,59%)]/30 text-white font-mono"
-              />
-            </div>
-            
-            <div>
-              <Label className="block text-sm font-mono text-[hsl(141,100%,59%)] mb-2">
-                EXTRACTION MODE
-              </Label>
-              <Select defaultValue="auto">
+              <Select defaultValue="sample_extraction">
                 <SelectTrigger className="bg-[hsl(0,0%,10%)] border border-[hsl(141,100%,59%)]/30 text-white font-mono">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="auto">AUTO_DETECT</SelectItem>
-                  <SelectItem value="drums">DRUM_SAMPLES</SelectItem>
-                  <SelectItem value="melody">MELODIC_LOOPS</SelectItem>
-                  <SelectItem value="vocal">VOCAL_CHOPS</SelectItem>
+                  <SelectItem value="sample_extraction">Sample Extraction</SelectItem>
+                  <SelectItem value="beat_detection">Beat Detection</SelectItem>
+                  <SelectItem value="melody_analysis">Melody Analysis</SelectItem>
+                  <SelectItem value="full_analysis">Full Analysis</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="block text-sm font-mono text-[hsl(141,100%,59%)] mb-2">
+                SENSITIVITY_LEVEL
+              </Label>
+              <Select defaultValue="medium">
+                <SelectTrigger className="bg-[hsl(0,0%,10%)] border border-[hsl(141,100%,59%)]/30 text-white font-mono">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low (Fewer samples)</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High (More samples)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -86,17 +68,17 @@ export default function SampleExtraction({ samples, setSamples, isProcessing }: 
         </div>
         
         {/* Extracted Samples */}
-        <div>
+        <div className="lg:col-span-2">
           <h3 className="text-lg font-bold mb-3 text-[hsl(24,100%,50%)]">EXTRACTED SAMPLES</h3>
-          <div className="space-y-2 max-h-64 overflow-y-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
             {samples.length > 0 ? (
               samples.map((sample) => (
-                <div key={sample.id} className="arrangement-item p-3 rounded flex justify-between items-center">
+                <div key={sample.id} className="cyber-card p-3 rounded flex flex-col justify-between items-start">
                   <div>
-                    <span className="font-mono text-sm">{sample.name}</span>
-                    <span className="text-xs text-gray-300 ml-2">{sample.duration}</span>
+                    <span className="font-mono text-sm font-bold text-white">{sample.name}</span>
+                    <span className="text-xs text-gray-400 block">{sample.duration}</span>
                   </div>
-                  <div className="flex gap-1">
+                  <div className="flex gap-2 mt-2">
                     <Button 
                       size="sm"
                       className="bg-[hsl(141,100%,59%)] hover:bg-green-400 text-black px-2 py-1 text-xs"
@@ -113,7 +95,7 @@ export default function SampleExtraction({ samples, setSamples, isProcessing }: 
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 text-gray-400 font-mono">
+              <div className="col-span-full text-center py-8 text-gray-400 font-mono">
                 {isProcessing ? (
                   <>
                     <div className="loading-spinner mx-auto mb-2"></div>

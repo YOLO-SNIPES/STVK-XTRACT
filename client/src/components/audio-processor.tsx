@@ -1,99 +1,104 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, Play, Pause, Square } from "lucide-react";
+import { Upload } from "lucide-react";
 import WaveformCanvas from "./waveform-canvas";
-import SampleExtraction from "./sample-extraction";
+import SampleControls from "./sample-controls";
+import SamplesDisplay from "./samples-display";
 import ArrangementTimeline from "./arrangement-timeline";
 import ExportControls from "./export-controls";
 import { useAudioContext } from "@/hooks/use-audio-context";
 import { useToast } from "@/hooks/use-toast";
+import { uploadProject, getProjectStatus, getProjectStems } from "@/lib/api-client";
+import type { AudioProject } from "@shared/schema";
 
 export default function AudioProcessor() {
-  const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [audioInfo, setAudioInfo] = useState<{filename: string, duration: string, size: string} | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [currentProject, setCurrentProject] = useState<AudioProject | null>(null);
   const [samples, setSamples] = useState<any[]>([]);
   const [arrangement, setArrangement] = useState<any[]>([]);
+  const [stemUrls, setStemUrls] = useState<string[]>([]);
+  const [mutedStems, setMutedStems] = useState<boolean[]>([]);
+  const [zoom, setZoom] = useState(1);
+  const [selection, setSelection] = useState<{ start: number; end: number } | null>(null);
   
-  const { audioContext, isPlaying, currentTime, duration, loadAudio, playAudio, pauseAudio, stopAudio } = useAudioContext();
+  const { loadAudio, playAudio, pauseAudio, stopAudio, currentTime, duration } = useAudioContext();
   const { toast } = useToast();
+
+  const { data: projectStatus } = useQuery({
+    queryKey: ["projectStatus", currentProject?.id],
+    queryFn: () => getProjectStatus(currentProject!.id),
+    enabled: !!currentProject && (currentProject.status === "processing" || currentProject.status === "uploaded"),
+    refetchInterval: 2000, // Poll every 2 seconds
+  });
+
+  useEffect(() => {
+    if (projectStatus?.status === "completed" && currentProject) {
+      getProjectStems(currentProject.id).then(urls => {
+        setStemUrls(urls);
+        setMutedStems(new Array(urls.length).fill(false));
+      });
+    }
+  }, [projectStatus, currentProject]);
+
+  const handleMuteChange = (newMuted: boolean[]) => {
+    setMutedStems(newMuted);
+  };
+
+  const handleSelectionChange = (newSelection: { start: number; end: number } | null) => {
+    setSelection(newSelection);
+  };
+
+  const { mutate: upload, isLoading: isUploading } = useMutation({
+    mutationFn: (file: File) => {
+      const audio = new Audio(URL.createObjectURL(file));
+      return new Promise<{ file: File; duration: number }>((resolve) => {
+        audio.onloadedmetadata = () => {
+          resolve({ file, duration: audio.duration });
+        };
+      });
+    },
+    onSuccess: async ({ file, duration }) => {
+      try {
+        const newProject = await uploadProject(file, file.name, duration);
+        setCurrentProject(newProject);
+        await loadAudio(file);
+        toast({ title: "Upload successful", description: "Your project is now being processed." });
+      } catch (error: any) {
+        toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+      }
+    },
+  });
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    try {
-      setAudioFile(file);
-      setAudioInfo({
-        filename: file.name,
-        duration: "Loading...",
-        size: `${(file.size / 1024 / 1024).toFixed(2)} MB`
-      });
-
-      await loadAudio(file);
-      
-      // Update duration once loaded
-      setAudioInfo(prev => prev ? {
-        ...prev,
-        duration: formatTime(duration)
-      } : null);
-
-      toast({
-        title: "Audio Loaded",
-        description: `Successfully loaded ${file.name}`,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load audio file",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handleProcessAudio = async () => {
-    if (!audioFile || !audioContext) return;
-
-    setIsProcessing(true);
-    try {
-      // Simulate AI processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Generate mock samples for demonstration
-      const mockSamples = Array.from({ length: 8 }, (_, i) => ({
-        id: i + 1,
-        name: `SAMPLE_${String(i + 1).padStart(3, '0')}`,
-        duration: `${(Math.random() * 2 + 0.5).toFixed(1)}s`,
-        startTime: i * 5,
-        endTime: i * 5 + 2,
-        waveform: Array.from({ length: 50 }, () => Math.random())
-      }));
-      
-      setSamples(mockSamples);
-      
-      toast({
-        title: "Extraction Complete",
-        description: `Extracted ${mockSamples.length} samples`,
-      });
-    } catch (error) {
-      toast({
-        title: "Processing Error",
-        description: "Failed to process audio",
-        variant: "destructive"
-      });
-    } finally {
-      setIsProcessing(false);
-    }
+    upload(file);
   };
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const getStatusMessage = () => {
+    if (isUploading) return "UPLOADING...";
+    if (!currentProject) return "AWAITING_INPUT";
+    switch (projectStatus?.status || currentProject.status) {
+      case "uploaded":
+        return "QUEUED FOR PROCESSING";
+      case "processing":
+        return "AI_PROCESSING...";
+      case "completed":
+        return "COMPLETED";
+      case "failed":
+        return "FAILED";
+      default:
+        return "READY";
+    }
   };
 
   return (
@@ -104,9 +109,7 @@ export default function AudioProcessor() {
           className="text-xl font-bold mb-6 text-[hsl(328,100%,50%)] neon-text glitch-word"
           data-text="AUDIO UPLOAD PROTOCOL"
         >
-          <span className="glitch-word" data-text="AUDIO">AUDIO</span>{" "}
-          <span className="glitch-word" data-text="UPLOAD">UPLOAD</span>{" "}
-          <span className="glitch-word" data-text="PROTOCOL">PROTOCOL</span>
+          AUDIO UPLOAD PROTOCOL
         </h2>
         <div className="flex flex-col lg:flex-row gap-4 items-center">
           <div className="flex-1 w-full">
@@ -116,54 +119,29 @@ export default function AudioProcessor() {
               onChange={handleFileChange}
               className="hidden"
               id="audioFile"
+              disabled={isUploading || (!!currentProject && currentProject.status !== "completed" && currentProject.status !== "failed")}
             />
             <Label
               htmlFor="audioFile"
-              className="cyber-button block text-center py-4 px-6 rounded-lg cursor-pointer transition-all animate-float"
+              className={`cyber-button block text-center py-4 px-6 rounded-lg cursor-pointer transition-all animate-float ${isUploading || (!!currentProject && currentProject.status !== "completed" && currentProject.status !== "failed") ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <Upload className="inline-block mr-2 h-4 w-4" />
-              <span className="glitch-word" data-text="SELECT AUDIO FILE">SELECT AUDIO FILE</span>
+              SELECT AUDIO FILE
             </Label>
-            <p className="text-xs text-gray-400 mt-3 font-mono">
-              // <span className="glitch-word" data-text="SUPPORTED">SUPPORTED</span>: 
-              <span className="text-[hsl(141,100%,59%)]">MP3, WAV, FLAC, OGG</span> //
-            </p>
           </div>
           <div className="text-center lg:text-right">
-            <Button
-              onClick={handleProcessAudio}
-              disabled={!audioFile || isProcessing}
-              className="cyber-button px-6 py-3 rounded-lg disabled:opacity-50 animate-pulse-neon"
-            >
-              <span className="glitch-word" data-text={isProcessing ? "PROCESSING..." : "INITIALIZE EXTRACTION"}>
-                {isProcessing ? "PROCESSING..." : "INITIALIZE EXTRACTION"}
-              </span>
-            </Button>
-            <p className="text-xs text-[hsl(141,100%,59%)] mt-3 font-mono">
-              <span className="glitch-word" data-text="STATUS">STATUS</span>: {" "}
-              <span className="glitch-word" data-text={audioFile ? "READY" : "AWAITING_INPUT"}>
-                {audioFile ? "READY" : "AWAITING_INPUT"}
-              </span>
+             <p className="text-xs text-[hsl(141,100%,59%)] mt-3 font-mono">
+              STATUS: {getStatusMessage()}
             </p>
           </div>
         </div>
         
-        {/* Audio Info */}
-        {audioInfo && (
+        {currentProject && (
           <div className="mt-4 p-4 bg-[hsl(0,0%,10%)] rounded border border-[hsl(141,100%,59%)]/30">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm font-mono">
-              <div>
-                <span className="text-[hsl(24,100%,50%)] glitch-word" data-text="FILENAME">FILENAME</span>:
-                <span className="text-white ml-2 glitch-word" data-text={audioInfo.filename}>{audioInfo.filename}</span>
-              </div>
-              <div>
-                <span className="text-[hsl(24,100%,50%)] glitch-word" data-text="DURATION">DURATION</span>:
-                <span className="text-white ml-2 glitch-word" data-text={audioInfo.duration}>{audioInfo.duration}</span>
-              </div>
-              <div>
-                <span className="text-[hsl(24,100%,50%)] glitch-word" data-text="SIZE">SIZE</span>:
-                <span className="text-white ml-2 glitch-word" data-text={audioInfo.size}>{audioInfo.size}</span>
-              </div>
+              <div>FILENAME: {currentProject.name}</div>
+              <div>DURATION: {formatTime(currentProject.duration || 0)}</div>
+              <div>SIZE: {((currentProject.size || 0) / 1024 / 1024).toFixed(2)} MB</div>
             </div>
           </div>
         )}
@@ -171,57 +149,55 @@ export default function AudioProcessor() {
 
       {/* Waveform Visualization */}
       <Card className="cyber-card rounded-lg p-6">
-        <h2 
-          className="text-xl font-bold mb-6 text-[hsl(328,100%,50%)] neon-text glitch-word"
-          data-text="WAVEFORM ANALYSIS"
-        >
-          <span className="glitch-word" data-text="WAVEFORM">WAVEFORM</span>{" "}
-          <span className="glitch-word" data-text="ANALYSIS">ANALYSIS</span>
-        </h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2
+            className="text-xl font-bold text-[hsl(328,100%,50%)] neon-text glitch-word"
+            data-text="WAVEFORM ANALYSIS"
+          >
+            WAVEFORM ANALYSIS
+          </h2>
+          <div className="flex gap-2">
+            <Button onClick={() => setZoom(z => Math.min(z * 1.5, 10))} size="sm" className="cyber-button font-mono">[+]</Button>
+            <Button onClick={() => setZoom(z => Math.max(z / 1.5, 1))} size="sm" className="cyber-button font-mono">[-]</Button>
+            <Button onClick={() => setZoom(1)} size="sm" className="cyber-button font-mono">[RST]</Button>
+          </div>
+        </div>
         <div className="waveform-container rounded-lg p-4 min-h-32">
-          <WaveformCanvas audioFile={audioFile} samples={samples} />
+          <WaveformCanvas
+            stemUrls={stemUrls}
+            samples={samples}
+            mutedStems={mutedStems}
+            zoom={zoom}
+            onSelectionChange={handleSelectionChange}
+          />
           <div className="flex justify-between items-center mt-4">
             <div className="flex gap-3">
-              <Button
-                onClick={playAudio}
-                disabled={!audioFile}
-                className="cyber-button px-4 py-2 rounded text-sm animate-float"
-              >
-                <Play className="mr-1 h-4 w-4" /> 
-                <span className="glitch-word" data-text="PLAY">PLAY</span>
-              </Button>
-              <Button
-                onClick={pauseAudio}
-                disabled={!audioFile}
-                className="bg-[hsl(24,100%,50%)] hover:bg-orange-400 text-black px-4 py-2 rounded text-sm transition-all animate-float"
-                style={{animationDelay: '0.2s'}}
-              >
-                <Pause className="mr-1 h-4 w-4" /> 
-                <span className="glitch-word" data-text="PAUSE">PAUSE</span>
-              </Button>
-              <Button
-                onClick={stopAudio}
-                disabled={!audioFile}
-                className="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded text-sm transition-all animate-float"
-                style={{animationDelay: '0.4s'}}
-              >
-                <Square className="mr-1 h-4 w-4" /> 
-                <span className="glitch-word" data-text="STOP">STOP</span>
-              </Button>
+              <Button onClick={playAudio} disabled={!currentProject} className="cyber-button px-4 py-2 rounded text-sm animate-float">PLAY</Button>
+              <Button onClick={pauseAudio} disabled={!currentProject} className="bg-[hsl(24,100%,50%)] hover:bg-orange-400 text-black px-4 py-2 rounded text-sm transition-all animate-float">PAUSE</Button>
+              <Button onClick={stopAudio} disabled={!currentProject} className="bg-red-500 hover:bg-red-400 text-white px-4 py-2 rounded text-sm transition-all animate-float">STOP</Button>
             </div>
-            <div className="text-sm font-mono text-[hsl(141,100%,59%)] glitch-word" data-text={`${formatTime(currentTime)} / ${formatTime(duration)}`}>
-              <span className="glitch-word" data-text={formatTime(currentTime)}>{formatTime(currentTime)}</span> / <span className="glitch-word" data-text={formatTime(duration)}>{formatTime(duration)}</span>
+            <Button
+              onClick={() => console.log("Extracting sample:", selection)}
+              disabled={!selection}
+              className="cyber-button font-bold"
+            >
+              [EXTRACT_SAMPLE.exe]
+            </Button>
+            <div className="text-sm font-mono text-[hsl(141,100%,59%)]">
+              {formatTime(currentTime)} / {formatTime(duration)}
             </div>
           </div>
         </div>
       </Card>
 
       {/* Sample Extraction */}
-      <SampleExtraction 
+      <SampleControls
         samples={samples} 
         setSamples={setSamples}
-        isProcessing={isProcessing}
+        isProcessing={projectStatus?.status === "processing"}
       />
+
+      <SamplesDisplay stems={stemUrls} onMuteChange={handleMuteChange} />
 
       {/* Arrangement Timeline */}
       <ArrangementTimeline 
@@ -235,36 +211,6 @@ export default function AudioProcessor() {
         samples={samples}
         arrangement={arrangement}
       />
-
-      {/* Processing Overlay */}
-      {isProcessing && (
-        <div className="fixed inset-0 bg-[hsl(0,0%,4%)]/90 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="text-center animate-float">
-            <div className="loading-spinner mx-auto mb-6"></div>
-            <p 
-              className="text-[hsl(328,100%,50%)] font-mono font-bold text-lg glitch-text mb-2"
-              data-text="PROCESSING AUDIO..."
-            >
-              <span className="glitch-word" data-text="PROCESSING">PROCESSING</span>{" "}
-              <span className="glitch-word" data-text="AUDIO">AUDIO</span>...
-            </p>
-            <p className="text-sm text-gray-400 font-mono glitch-word" data-text="// AI EXTRACTION IN PROGRESS //">
-              // <span className="glitch-word" data-text="AI">AI</span>{" "}
-              <span className="glitch-word" data-text="EXTRACTION">EXTRACTION</span>{" "}
-              <span className="glitch-word" data-text="IN">IN</span>{" "}
-              <span className="glitch-word" data-text="PROGRESS">PROGRESS</span> //
-            </p>
-            
-            {/* Data streams */}
-            <div className="absolute -top-10 left-0 w-full h-1 overflow-hidden">
-              <div className="w-full h-full bg-gradient-to-r from-transparent via-[hsl(328,100%,50%)] to-transparent animate-data-flow"></div>
-            </div>
-            <div className="absolute -bottom-10 left-0 w-full h-1 overflow-hidden">
-              <div className="w-full h-full bg-gradient-to-r from-transparent via-[hsl(141,100%,59%)] to-transparent animate-data-flow" style={{animationDelay: '1s'}}></div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

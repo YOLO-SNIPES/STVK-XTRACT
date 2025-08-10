@@ -14,6 +14,7 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
+import { saltAndHashPassword } from "./auth";
 
 export interface IStorage {
   // User methods
@@ -53,9 +54,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
+    const hashedPassword = await saltAndHashPassword(insertUser.password);
     const [user] = await db
       .insert(users)
-      .values(insertUser)
+      .values({ ...insertUser, password: hashedPassword })
       .returning();
     return user;
   }

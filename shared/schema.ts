@@ -10,6 +10,10 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+import { pgEnum } from "drizzle-orm/pg-core";
+
+export const projectStatusEnum = pgEnum("project_status", ["uploaded", "processing", "completed", "failed"]);
+
 export const audioProjects = pgTable("audio_projects", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
@@ -17,6 +21,7 @@ export const audioProjects = pgTable("audio_projects", {
   filename: text("filename").notNull(),
   duration: real("duration"),
   size: integer("size"),
+  status: projectStatusEnum("status").default("uploaded"),
   extractionSettings: jsonb("extraction_settings"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -83,6 +88,7 @@ export const insertAudioProjectSchema = createInsertSchema(audioProjects).pick({
   duration: true,
   size: true,
   extractionSettings: true,
+  status: true,
 });
 
 export const insertAudioSampleSchema = createInsertSchema(audioSamples).pick({

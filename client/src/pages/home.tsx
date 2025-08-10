@@ -1,15 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AudioProcessor from "@/components/audio-processor";
-import NavigationTabs from "@/components/navigation-tabs";
+import MainMenu from "@/components/main-menu";
 import InfoSections from "@/components/info-sections";
-import { Play, Square, User } from "lucide-react";
+import { Play, Square, User, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState<string>("main");
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const { user, logout, isLoading } = useAuth();
+  const [, setLocation] = useLocation();
 
   // PWA Installation
-  useState(() => {
+  useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -17,21 +22,51 @@ export default function Home() {
     
     window.addEventListener('beforeinstallprompt', handler);
     return () => window.removeEventListener('beforeinstallprompt', handler);
-  });
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      setLocation("/login");
+    }
+  }, [isLoading, user, setLocation]);
 
   const handleInstallPWA = async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
-      const choiceResult = await deferredPrompt.userChoice;
+      await deferredPrompt.userChoice;
       setDeferredPrompt(null);
     }
   };
+
+  const handleLogout = async () => {
+    await logout();
+    setLocation("/login");
+  };
+
+  if (isLoading || !user) {
+    return (
+      <div className="min-h-screen text-white flex items-center justify-center">
+        <div className="loading-spinner"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen text-white">
       <div className="container mx-auto px-4 py-6 max-w-6xl">
         {/* Header */}
         <div className="text-center mb-12 relative">
+          <div className="absolute top-0 right-0 flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <User className="h-4 w-4 text-[hsl(141,100%,59%)]" />
+              <span className="font-mono text-sm">{user.username}</span>
+            </div>
+            <Button onClick={handleLogout} variant="ghost" size="sm" className="cyber-button">
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
+
           <h1 
             className="text-4xl md:text-6xl font-black mb-4 neon-text glitch-title text-[hsl(328,100%,50%)]"
             data-text="STAK-XTRACT"
@@ -74,7 +109,7 @@ export default function Home() {
           </div>
           
           {/* Navigation */}
-          <NavigationTabs 
+          <MainMenu
             activeSection={activeSection} 
             setActiveSection={setActiveSection}
             onInstallPWA={handleInstallPWA}
