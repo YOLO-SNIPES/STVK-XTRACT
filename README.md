@@ -1,88 +1,76 @@
-# STAK-XTRACT
+# 🎵 STAK-XTRACT
 
-STAK-XTRACT is an AI-powered audio sample extraction and arrangement tool designed for music producers, beatmakers, and audio enthusiasts. It uses advanced machine learning algorithms to intelligently identify and separate audio tracks, allowing users to extract samples and create new arrangements.
+> AI-Powered Audio Sample Extraction Tool with Cyberpunk Interface
 
-## Features
+[![Live Demo](https://img.shields.io/badge/Live-Demo-ff0080?style=for-the-badge)](https://yourusername.github.io/stak-xtract)
+[![License](https://img.shields.io/badge/License-MIT-00ff88?style=for-the-badge)](LICENSE)
+[![Built with](https://img.shields.io/badge/Built%20with-HTML%2FCSS%2FJS-ff6600?style=for-the-badge)](https://github.com/yourusername/stak-xtract)
 
--   **AI-Powered Source Separation**: Automatically separate audio tracks into vocals, bass, drums, and other stems using Demucs.
--   **Interactive Waveform Display**: View the waveforms of all separated tracks, with controls for muting and zooming.
--   **User Authentication**: Secure user accounts and session management.
--   **Cross-Platform**: Ready to be packaged as a desktop application with Electron and a mobile application with Capacitor.
--   **Modern Tech Stack**: Built with TypeScript, React, Node.js, and a PostgreSQL database.
+## 🚀 Overview
 
-## Getting Started
+STAK-XTRACT is an experimental AI-powered audio analysis tool that intelligently extracts samples from audio files. Featuring a futuristic cyberpunk interface with neon animations, it's designed for music producers, beatmakers, and audio enthusiasts.
 
-Follow these instructions to get the project up and running on your local machine for development and testing purposes.
+### ✨ Key Features
 
-### Prerequisites
+- 🤖 **AI-Powered Analysis** - Intelligent sample detection using advanced machine learning
+- 🎵 **Multiple Analysis Types** - Sample extraction, beat detection, melody analysis, and full analysis
+- 📊 **Real-time Waveform Visualization** - Interactive canvas with zoom controls
+- 🎛️ **Drag & Drop Arrangement** - Intuitive sample organization and sequencing
+- 📁 **Export Functionality** - Download samples and arrangements as ZIP files
+- 🎨 **Cyberpunk UI** - Futuristic interface with neon effects and animations
+- 📱 **Responsive Design** - Works on desktop, tablet, and mobile devices
+- 📚 **Complete Documentation** - Built-in user guide, FAQ, and legal pages
 
-You will need the following software installed on your machine:
+## 🛠️ Technology Stack
 
--   [Node.js](https://nodejs.org/) (v20 or later)
--   [npm](https://www.npmjs.com/) (v10 or later)
--   [Docker](https://www.docker.com/) (for running the AI processing)
+- **Frontend**: Pure HTML5, CSS3, JavaScript (ES6+)
+- **Styling**: TailwindCSS via CDN
+- **Audio Processing**: Web Audio API
+- **Visualization**: Canvas API
+- **File Handling**: JSZip for export functionality
+- **AI Integration**: Poe Embed API (for full functionality)
+- **Fonts**: Google Fonts (Orbitron)
 
-### Installation
+## 🎯 Quick Start
 
-1.  **Clone the repository:**
-    ```sh
-    git clone <repository-url>
-    cd <repository-name>
-    ```
+### Online (Full Experience)
+Visit the live demo: [https://yourusername.github.io/stak-xtract](https://yourusername.github.io/stak-xtract)
 
-2.  **Install the dependencies:**
-    ```sh
-    npm install
-    ```
+### Local Development
+1. Clone this repository
+2. Open `index.html` in a modern web browser
+3. Upload an audio file or use the sample pack
+4. Note: AI analysis requires the Poe platform environment
 
-### Environment Setup
+## 📖 How to Use
 
-1.  **Create a `.env` file:**
-    Create a new file named `.env` in the root of the project by copying the example file:
-    ```sh
-    cp .env.example .env
-    ```
+1. **Upload Audio**: Click `[UPLOAD_AUDIO.exe]` to select a file (MP3, WAV, OGG, FLAC, M4A)
+2. **Configure Analysis**: Choose analysis type and sensitivity level
+3. **Execute Scan**: Click `[EXECUTE_AI_SCAN.exe]` to analyze the audio
+4. **Review Results**: View extracted samples in the waveform and grid
+5. **Create Arrangements**: Drag samples to arrange or use AI generation
+6. **Export**: Download your samples and arrangements as a ZIP file
 
-2.  **Set up the database:**
-    -   Create a new PostgreSQL database. A free-tier provider like [Neon](https://neon.tech/) is recommended.
-    -   Get the connection string (`DATABASE_URL`) for your new database.
-    -   Open the `.env` file and replace the placeholder `DATABASE_URL` with your real connection string.
+## 🎵 Analysis Types
 
-3.  **Set the session secret:**
-    -   Generate a new session secret by running the following command in your terminal:
-        ```sh
-        node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-        ```
-    -   Copy the generated secret and replace the placeholder `SESSION_SECRET` in your `.env` file.
+- **Sample Extraction**: Identifies distinct musical elements (drums, bass, leads, vocals)
+- **Beat Detection**: Focuses on rhythmic and percussive elements
+- **Melody Analysis**: Extracts melodic and harmonic components
+- **Full Analysis**: Comprehensive analysis combining all methods
 
-### Database Migration
+## 🎛️ Sensitivity Levels
 
-Once you have set up your environment variables, you need to apply the database schema to your new database.
+- **Low**: 3-8 samples - Most prominent elements only
+- **Medium**: 8-15 samples - Balanced detection (recommended)
+- **High**: 15-25 samples - Detects subtle elements and variations
 
-Run the following command:
-```sh
-npm run db:push
-```
-This will create all the necessary tables in your database.
+## 🔧 Local Limitations
 
-### Running the Application
+When running locally (without Poe environment):
+- ✅ Audio file upload and playback
+- ✅ Waveform visualization with zoom
+- ✅ UI navigation and documentation
+- ❌ AI analysis (core feature disabled)
+- ❌ Sample extraction and arrangement generation
 
-Now you are ready to run the application.
-
-1.  **Build the AI processor Docker image:**
-    The application will automatically build the Docker image for the AI processor on the first run. Make sure Docker is running on your machine.
-
-2.  **Start the development server:**
-    ```sh
-    npm run dev
-    ```
-    This will start the backend server and the frontend development server. The application will be available at `http://localhost:5000`.
-
-## Technology Stack
-
--   **Frontend**: React, Vite, TypeScript, Tailwind CSS, Radix UI
--   **Backend**: Node.js, Express, TypeScript
--   **Database**: PostgreSQL, Drizzle ORM
--   **AI**: Demucs (via Python and Docker)
--   **Authentication**: Passport.js
--   **Cross-Platform**: Electron, Capacitor
+## 📁 Project Structure
