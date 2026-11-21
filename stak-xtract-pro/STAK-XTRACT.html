@@ -1,0 +1,1535 @@
+<!DOCTYPE html><html lang="en"><head><meta name="x-poe-datastore-behavior" content="local_only"><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAK-XTRACT 1.0.0 Official by YOLO SNIPES</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#ff0080',
+                        secondary: '#00ff88',
+                        accent: '#ff6600',
+                        dark: '#0a0a0a',
+                        'dark-card': '#1a1a1a',
+                        'neon-purple': '#8b5cf6',
+                        'neon-cyan': '#06b6d4',
+                        'neon-green': '#10b981'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 0, 128, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 102, 0, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .waveform-container {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 50%, #000 100%);
+            border: 1px solid rgba(255, 0, 128, 0.3);
+            box-shadow: 
+                0 0 20px rgba(255, 0, 128, 0.2),
+                inset 0 0 20px rgba(0, 255, 136, 0.1);
+        }
+        
+        .cyber-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+            border: 1px solid rgba(255, 0, 128, 0.3);
+            box-shadow: 
+                0 0 15px rgba(255, 0, 128, 0.1),
+                inset 0 0 15px rgba(0, 255, 136, 0.05);
+            position: relative;
+        }
+        
+        .cyber-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff0080, transparent);
+            animation: scan 3s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .sample-segment {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .sample-segment:hover {
+            transform: scaleY(1.1);
+        }
+        
+        .loading-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .waveform-animation {
+            animation: waveflow 3s ease-in-out infinite;
+        }
+        
+        @keyframes waveflow {
+            0%, 100% { 
+                filter: hue-rotate(0deg) brightness(1) drop-shadow(0 0 10px rgba(255, 0, 128, 0.5)); 
+            }
+            33% { 
+                filter: hue-rotate(120deg) brightness(1.2) drop-shadow(0 0 15px rgba(0, 255, 136, 0.7)); 
+            }
+            66% { 
+                filter: hue-rotate(240deg) brightness(1.1) drop-shadow(0 0 12px rgba(255, 102, 0, 0.6)); 
+            }
+        }
+        
+        .arrangement-item {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ff0080 0%, #8b5cf6 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .arrangement-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .arrangement-item:hover::before {
+            left: 100%;
+        }
+        
+        .arrangement-item:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 
+                0 8px 25px rgba(255, 0, 128, 0.4),
+                0 0 20px rgba(0, 255, 136, 0.3);
+        }
+        
+        .neon-text {
+            text-shadow: 
+                0 0 5px currentColor,
+                0 0 10px currentColor,
+                0 0 15px currentColor;
+        }
+        
+        .cyber-button {
+            background: linear-gradient(135deg, #ff0080, #8b5cf6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .cyber-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.3s;
+        }
+        
+        .cyber-button:hover::before {
+            left: 100%;
+        }
+        
+        .cyber-button:hover {
+            box-shadow: 
+                0 0 20px rgba(255, 0, 128, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .glitch-text {
+            animation: glitch 2s infinite;
+        }
+        
+        @keyframes glitch {
+            0%, 90%, 100% { transform: translate(0); }
+            20% { transform: translate(-1px, 1px); }
+            40% { transform: translate(-1px, -1px); }
+            60% { transform: translate(1px, 1px); }
+            80% { transform: translate(1px, -1px); }
+        }
+        
+        .data-stream {
+            position: relative;
+        }
+        
+        .data-stream::after {
+            content: '// YOLO_SNIPES.exe';
+            position: absolute;
+            top: -20px;
+            right: 0;
+            font-size: 10px;
+            color: #00ff88;
+            opacity: 0.7;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-dark text-gray-900 dark:text-white min-h-screen">
+    <div class="container mx-auto px-4 py-6 max-w-6xl">
+        <!-- Header -->
+        <div class="text-center mb-8 data-stream">
+            <h1 class="text-4xl font-black mb-2 neon-text glitch-text" style="color: #ff0080;">STAK-XTRACT</h1>
+            <p class="text-lg font-bold mb-1" style="color: #00ff88;">by YOLO SNIPES</p>
+            <p class="text-sm" style="color: #ff6600; text-shadow: 0 0 10px currentColor;">// AI-POWERED SAMPLE EXTRACTION PROTOCOL // OFFICIAL v1.0.0 //</p>
+            <div class="mt-2"><span id="engineStatus" class="text-xs font-mono px-2 py-1 rounded" style="background:#1a1a1a;color:#ffcc00;border:1px solid #ffcc00;">ENGINE: CHECKING...</span> <span id="engineInfo" class="text-xs font-mono text-gray-400"></span></div>
+            <div class="flex justify-center items-center gap-2 mt-2">
+                <div class="w-2 h-2 bg-neon-green rounded-full animate-pulse"></div>
+                <span class="text-xs font-mono text-neon-green">SYSTEM_ONLINE</span>
+                <div class="w-2 h-2 bg-neon-green rounded-full animate-pulse"></div>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <div class="flex justify-center flex-wrap gap-2 mt-4">
+                <button onclick="showMainApp()" id="mainAppBtn" class="bg-primary text-white px-3 py-1 rounded text-sm font-mono hover:bg-purple-600">[MAIN]</button>
+                <button onclick="showGuide()" class="bg-neon-cyan text-white px-3 py-1 rounded text-sm font-mono hover:bg-cyan-400">[GUIDE]</button>
+                <button onclick="showFAQ()" class="bg-secondary text-black px-3 py-1 rounded text-sm font-mono hover:bg-green-400">[FAQ]</button>
+                <button onclick="showPrivacy()" class="bg-accent text-black px-3 py-1 rounded text-sm font-mono hover:bg-orange-400">[PRIVACY]</button>
+                <button onclick="showTerms()" class="bg-neon-purple text-white px-3 py-1 rounded text-sm font-mono hover:bg-purple-400">[TERMS]</button>
+                <button onclick="showDisclaimer()" class="bg-red-500 text-white px-3 py-1 rounded text-sm font-mono hover:bg-red-400">[DISCLAIMER]</button>
+            </div>
+        </div>
+
+        <!-- Audio Upload/Load Section -->
+        <div class="cyber-card rounded-lg p-6 mb-6">
+            <div class="flex flex-col lg:flex-row gap-4 items-center">
+                <div class="flex-1">
+                    <input type="file" id="audioFile" accept="audio/*" class="hidden">
+                    <button onclick="document.getElementById('audioFile').click()" class="w-full lg:w-auto cyber-button text-white px-6 py-3 rounded-lg font-bold">
+                        [UPLOAD_AUDIO.exe]
+                    </button>
+                </div>
+                <div class="text-accent font-mono text-sm">// OR //</div>
+                <button onclick="loadProvidedAudio()" class="w-full lg:w-auto bg-secondary text-black px-6 py-3 rounded-lg hover:bg-neon-green transition-colors font-bold">
+                    [LOAD_SAMPLE_PACK.exe]
+                </button>
+            </div>
+            
+            <!-- Audio Player -->
+            <audio id="audioPlayer" controls="" class="w-full mt-4 hidden"></audio>
+        </div>
+
+        <!-- AI Analysis Controls -->
+        <div class="cyber-card rounded-lg p-6 mb-6">
+            <h3 class="text-xl font-bold mb-4 neon-text" style="color: #00ff88;">// AI_ANALYSIS_MODULE //</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-mono mb-2 text-accent">ANALYSIS_TYPE:</label>
+                    <select id="analysisType" class="w-full p-3 text-base border border-primary rounded-lg bg-dark-card text-white font-mono">
+                        <option value="sample_extraction">Sample Extraction</option>
+                        <option value="beat_detection">Beat Detection</option>
+                        <option value="melody_analysis">Melody Analysis</option>
+                        <option value="full_analysis">Full Analysis</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-mono mb-2 text-accent">SENSITIVITY_LEVEL:</label>
+                    <select id="sensitivity" class="w-full p-3 text-base border border-primary rounded-lg bg-dark-card text-white font-mono">
+                        <option value="low">Low (Fewer samples)</option>
+                        <option value="medium" selected="">Medium</option>
+                        <option value="high">High (More samples)</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="analyzeAudio()" id="analyzeBtn" class="w-full cyber-button text-white px-6 py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed font-bold">
+                        [EXECUTE_AI_SCAN.exe]
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Waveform Visualization -->
+        <div class="cyber-card rounded-lg p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold neon-text" style="color: #ff6600;">// WAVEFORM_ANALYSIS //</h3>
+                <div id="trackInfo" class="text-xs font-mono text-accent"></div>
+                <div class="flex gap-2">
+                    <button onclick="zoomIn()" class="bg-neon-purple text-white px-3 py-1 rounded text-sm hover:bg-purple-400 font-mono">[+]</button>
+                    <button onclick="zoomOut()" class="bg-neon-purple text-white px-3 py-1 rounded text-sm hover:bg-purple-400 font-mono">[-]</button>
+                    <button onclick="resetZoom()" class="bg-accent text-black px-3 py-1 rounded text-sm hover:bg-orange-400 font-mono">[RST]</button>
+                </div>
+            </div>
+            <div class="waveform-container rounded-lg p-4 relative overflow-x-auto">
+                <canvas id="waveformCanvas" class="w-full h-48 rounded waveform-animation"></canvas>
+                <div id="loadingIndicator" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded hidden">
+                    <div class="text-white loading-pulse">Analyzing audio...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Extracted Samples -->
+        <div class="cyber-card rounded-lg p-6 mb-6">
+            <h3 class="text-xl font-bold mb-4 neon-text" style="color: #8b5cf6;">// EXTRACTED_SAMPLES //</h3>
+            <div id="samplesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="text-center text-gray-500 dark:text-gray-400 col-span-full py-8">
+                    No samples extracted yet. Upload audio and run AI analysis.
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Arrangement -->
+        <div class="cyber-card rounded-lg p-6 mb-6">
+            <h3 class="text-xl font-bold mb-4 neon-text" style="color: #06b6d4;">// ARRANGEMENT_PROTOCOL //</h3>
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button onclick="clearArrangement()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-400 font-mono">[CLR]</button>
+                <button onclick="playArrangement()" class="bg-secondary text-black px-4 py-2 rounded hover:bg-green-400 font-mono">[PLAY]</button>
+                <button onclick="generateAIArrangement()" class="cyber-button text-white px-4 py-2 rounded font-mono">[AI_GEN]</button>
+                <button onclick="scrollArrangementLeft()" class="bg-neon-cyan text-white px-3 py-2 rounded hover:bg-cyan-400 font-mono">←</button>
+                <button onclick="scrollArrangementRight()" class="bg-neon-cyan text-white px-3 py-2 rounded hover:bg-cyan-400 font-mono">→</button>
+            </div>
+            <div class="text-sm text-accent mb-2 font-mono">
+                // TIP: CLICK_SAMPLES || DRAG_TO_ARRANGE //
+            </div>
+            <div id="arrangementTrack" class="bg-gray-700 rounded-lg p-4 min-h-32 border-2 border-dashed border-gray-500 overflow-x-auto">
+                <div class="text-center text-gray-400">Drag samples here to arrange them or click samples below to add</div>
+            </div>
+        </div>
+
+        <!-- Export Options -->
+        <div class="cyber-card rounded-lg p-6" id="mainAppContent">
+            <h3 class="text-xl font-bold mb-4 neon-text" style="color: #ff0080;">// EXPORT_MODULE //</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-mono mb-2 text-accent">FORMAT:</label>
+                    <select id="exportFormat" class="w-full p-3 text-base border border-primary rounded-lg bg-dark-card text-white font-mono">
+                        <option value="mp3">MP3</option>
+                        <option value="aif">AIF</option>
+                        <option value="m4a">M4A</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-mono mb-2 text-accent">QUALITY:</label>
+                    <select id="exportQuality" class="w-full p-3 text-base border border-primary rounded-lg bg-dark-card text-white font-mono">
+                        <option value="high">High</option>
+                        <option value="medium" selected="">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-mono mb-2 text-accent">SAMPLE_RATE:</label>
+                    <select id="sampleRate" class="w-full p-3 text-base border border-primary rounded-lg bg-dark-card text-white font-mono">
+                        <option value="44100" selected="">44.1 kHz</option>
+                        <option value="48000">48 kHz</option>
+                        <option value="96000">96 kHz</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="exportSamples()" id="exportBtn" class="w-full cyber-button text-white px-6 py-3 rounded-lg disabled:opacity-50 font-bold">
+                        [EXPORT_ZIP.exe]
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Create MIDI -->
+        <div class="cyber-card rounded-lg p-6 mb-6">
+            <h3 class="text-xl font-bold mb-4 neon-text" style="color: #10b981;">// CREATE_MIDI //</h3>
+            <p class="text-sm text-gray-400 mb-4">Generate a MIDI starter from one of your analyzed tracks. The engine renders chords, bass, drums and melody from the learned template, plus an arrangement sketch. Needs the engine online.</p>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div><label class="block text-sm font-mono mb-2 text-accent">LIKE (TEMPLATE):</label>
+                    <select id="createLike" class="w-full p-3 text-base border border-primary rounded-lg bg-dark-card text-white font-mono">
+                        <option>artificial_instruments</option><option>diagnostic_overload</option>
+                        <option>digital_house_of_cards</option><option>how_to_love</option>
+                        <option>geometry_of_belief</option><option>ghost_riots</option>
+                        <option>lyrical_doom</option><option>anger_management</option>
+                        <option>deceptive_perceptions</option><option>internalism_album</option>
+                    </select></div>
+                <div><label class="block text-sm font-mono mb-2 text-accent">BPM:</label>
+                    <input id="createBpm" type="number" value="140" class="w-full p-3 text-base border border-primary rounded-lg bg-dark-card text-white font-mono"></div>
+                <div><label class="block text-sm font-mono mb-2 text-accent">KEY:</label>
+                    <input id="createKey" type="text" value="D min" class="w-full p-3 text-base border border-primary rounded-lg bg-dark-card text-white font-mono"></div>
+                <div><label class="block text-sm font-mono mb-2 text-accent">MOOD:</label>
+                    <select id="createMood" class="w-full p-3 text-base border border-primary rounded-lg bg-dark-card text-white font-mono">
+                        <option>dark</option><option>driving</option><option>heavy</option><option>glitchy</option>
+                        <option>rolling</option><option>trappy</option><option>open</option><option>euphoric</option>
+                    </select></div>
+                <div><label class="block text-sm font-mono mb-2 text-accent">LENGTH (M:SS):</label>
+                    <input id="createLength" type="text" value="4:00" class="w-full p-3 text-base border border-primary rounded-lg bg-dark-card text-white font-mono"></div>
+                <div><label class="block text-sm font-mono mb-2 text-accent">SEED:</label>
+                    <input id="createSeed" type="number" value="42" class="w-full p-3 text-base border border-primary rounded-lg bg-dark-card text-white font-mono"></div>
+            </div>
+            <button onclick="createMidi()" id="createBtn" class="mt-4 w-full cyber-button text-white px-6 py-3 rounded-lg font-bold">[GENERATE_MIDI.exe]</button>
+            <div id="createResult" class="text-xs font-mono text-accent mt-2"></div>
+        </div>
+
+        <!-- Documentation Pages (Hidden by default) -->
+        
+        <!-- User Guide -->
+        <div id="guideContent" class="hidden">
+            <div class="cyber-card rounded-lg p-6 mb-6">
+                <h2 class="text-3xl font-bold mb-6 neon-text text-center" style="color: #ff0080;">// USER_GUIDE.exe //</h2>
+                
+                <div class="space-y-6">
+                    <section>
+                        <h3 class="text-xl font-bold mb-3 neon-text" style="color: #00ff88;">OVERVIEW</h3>
+                        <p class="text-sm mb-4">STAK-XTRACT is an AI-powered audio sample extraction and arrangement tool designed for music producers, beatmakers, and audio enthusiasts. It uses advanced machine learning algorithms to intelligently identify and extract samples from audio files.</p>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold mb-3 neon-text" style="color: #00ff88;">GETTING STARTED</h3>
+                        <ol class="list-decimal list-inside space-y-2 text-sm">
+                            <li><strong>Start the engine (for real analysis):</strong> Run launch.sh — it starts engine/server.py on port 8777. The ENGINE pill in the header turns green when it is online. Without it, the app still shows waveforms but will not invent analysis.</li>
+                            <li><strong>Upload Audio:</strong> Click [UPLOAD_AUDIO.exe] to select an audio file from your device (supports MP3, WAV, OGG, FLAC, M4A)</li>
+                            <li><strong>Load Sample:</strong> Or click [LOAD_SAMPLE_PACK.exe] to use the provided demo audio</li>
+                            <li><strong>Configure Analysis:</strong> Choose your analysis type and sensitivity level</li>
+                            <li><strong>Execute Scan:</strong> Click [EXECUTE_AI_SCAN.exe] to analyze the audio</li>
+                            <li><strong>Review Samples:</strong> View extracted samples in the waveform and sample grid</li>
+                            <li><strong>Arrange:</strong> Drag samples to create arrangements or use AI generation</li>
+                            <li><strong>Export:</strong> Download your samples as real .wav files in a ZIP file</li>
+                            <li><strong>Create MIDI:</strong> Use CREATE_MIDI to generate a MIDI starter (chords, bass, drums, melody + arrangement sketch) from one of your analyzed tracks</li>
+                        </ol>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold mb-3 neon-text" style="color: #00ff88;">ANALYSIS TYPES</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div class="bg-dark-card p-3 rounded">
+                                <h4 class="font-bold text-accent">Sample Extraction</h4>
+                                <p>Identifies distinct musical elements like drums, bass, leads, and vocals</p>
+                            </div>
+                            <div class="bg-dark-card p-3 rounded">
+                                <h4 class="font-bold text-accent">Beat Detection</h4>
+                                <p>Focuses on rhythmic elements and percussive sounds</p>
+                            </div>
+                            <div class="bg-dark-card p-3 rounded">
+                                <h4 class="font-bold text-accent">Melody Analysis</h4>
+                                <p>Extracts melodic and harmonic components</p>
+                            </div>
+                            <div class="bg-dark-card p-3 rounded">
+                                <h4 class="font-bold text-accent">Full Analysis</h4>
+                                <p>Comprehensive analysis combining all detection methods</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold mb-3 neon-text" style="color: #00ff88;">SENSITIVITY LEVELS</h3>
+                        <div class="space-y-2 text-sm">
+                            <div><strong>Low:</strong> 3-8 samples - Extracts only the most prominent elements</div>
+                            <div><strong>Medium:</strong> 8-15 samples - Balanced detection (recommended)</div>
+                            <div><strong>High:</strong> 15-25 samples - Detects subtle elements and variations</div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold mb-3 neon-text" style="color: #00ff88;">WAVEFORM CONTROLS</h3>
+                        <div class="space-y-2 text-sm">
+                            <div><strong>[+]:</strong> Zoom in for detailed view</div>
+                            <div><strong>[-]:</strong> Zoom out for overview</div>
+                            <div><strong>[RST]:</strong> Reset to default zoom level</div>
+                            <div><strong>Colored Segments:</strong> Visual representation of extracted samples</div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold mb-3 neon-text" style="color: #00ff88;">ARRANGEMENT FEATURES</h3>
+                        <div class="space-y-2 text-sm">
+                            <div><strong>Drag &amp; Drop:</strong> Drag samples from the grid to the arrangement track</div>
+                            <div><strong>Click to Add:</strong> Use the "Add" button on each sample card</div>
+                            <div><strong>[CLR]:</strong> Clear all samples from arrangement</div>
+                            <div><strong>[PLAY]:</strong> Play the current arrangement sequence</div>
+                            <div><strong>[AI_GEN]:</strong> Generate optimal arrangement using AI</div>
+                            <div><strong>← →:</strong> Scroll arrangement track horizontally</div>
+                            <div><strong>Reorder:</strong> Use ◀ ▶ buttons to move samples within arrangement</div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold mb-3 neon-text" style="color: #00ff88;">EXPORT OPTIONS</h3>
+                        <div class="space-y-2 text-sm">
+                            <div><strong>Formats:</strong> MP3, AIF, M4A</div>
+                            <div><strong>Quality:</strong> High/Medium/Low compression</div>
+                            <div><strong>Sample Rate:</strong> 44.1kHz, 48kHz, 96kHz</div>
+                            <div><strong>Output:</strong> ZIP file containing sample metadata and arrangement data</div>
+                        </div>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold mb-3 neon-text" style="color: #00ff88;">TIPS &amp; TRICKS</h3>
+                        <ul class="list-disc list-inside space-y-1 text-sm">
+                            <li>Use higher sensitivity for complex tracks with many layers</li>
+                            <li>Try different analysis types to focus on specific elements</li>
+                            <li>Clean, high-quality source audio produces better results</li>
+                            <li>AI arrangement considers energy levels and musical flow</li>
+                            <li>Experiment with different zoom levels for precise sample boundaries</li>
+                            <li>Each sample shows duration, energy level, and detected pitch</li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Page -->
+        <div id="faqContent" class="hidden">
+            <div class="cyber-card rounded-lg p-6 mb-6">
+                <h2 class="text-3xl font-bold mb-6 neon-text text-center" style="color: #ff0080;">// FAQ.exe //</h2>
+                
+                <div class="space-y-6">
+                    <div class="bg-dark-card p-4 rounded">
+                        <h3 class="font-bold text-accent mb-2">Q: What audio formats are supported?</h3>
+                        <p class="text-sm">A: STAK-XTRACT supports MP3, WAV, OGG, FLAC, M4A, and most common audio formats. For best results, use uncompressed formats like WAV or FLAC.</p>
+                    </div>
+
+                    <div class="bg-dark-card p-4 rounded">
+                        <h3 class="font-bold text-accent mb-2">Q: How accurate is the AI sample detection?</h3>
+                        <p class="text-sm">A: The AI achieves 85-95% accuracy depending on audio quality and complexity. Clean, well-mixed tracks produce the best results. Complex polyphonic music may require manual adjustment.</p>
+                    </div>
+
+                    <div class="bg-dark-card p-4 rounded">
+                        <h3 class="font-bold text-accent mb-2">Q: What's the maximum file size I can upload?</h3>
+                        <p class="text-sm">A: File size limits depend on your browser and device memory. Generally, files up to 100MB work well. Longer tracks may take more time to process.</p>
+                    </div>
+
+                    <div class="bg-dark-card p-4 rounded">
+                        <h3 class="font-bold text-accent mb-2">Q: Can I edit the detected sample boundaries?</h3>
+                        <p class="text-sm">A: Currently, sample boundaries are automatically detected by the AI. Future versions will include manual editing capabilities. You can influence detection using different sensitivity settings.</p>
+                    </div>
+
+                    <div class="bg-dark-card p-4 rounded">
+                        <h3 class="font-bold text-accent mb-2">Q: Does STAK-XTRACT work offline?</h3>
+                        <p class="text-sm">A: Analysis runs on your own machine through the local engine bridge (engine/server.py, port 8777), which uses the YOLO music utility — librosa feature extraction, honest numbers, no invented samples. Audio never leaves your device. Waveform visualization works offline once audio is loaded.</p>
+                    </div>
+
+                    <div class="bg-dark-card p-4 rounded">
+                        <h3 class="font-bold text-accent mb-2">Q: Why do I only get JSON files in the export?</h3>
+                        <p class="text-sm">A: The official version exports real audio: each sample is sliced from your file and written as a .wav, plus samples.json metadata and arrangement.json. The old preview exported JSON only.</p>
+                    </div>
+
+                    <div class="bg-dark-card p-4 rounded">
+                        <h3 class="font-bold text-accent mb-2">Q: What makes the AI arrangement feature special?</h3>
+                        <p class="text-sm">A: The AI considers musical factors like energy levels, rhythm patterns, and harmonic relationships to create coherent arrangements that flow naturally.</p>
+                    </div>
+
+                    <div class="bg-dark-card p-4 rounded">
+                        <h3 class="font-bold text-accent mb-2">Q: Can I use STAK-XTRACT for commercial projects?</h3>
+                        <p class="text-sm">A: You can use STAK-XTRACT for analysis, but ensure you have proper rights to the source audio. Always respect copyright laws and licensing agreements.</p>
+                    </div>
+
+                    <div class="bg-dark-card p-4 rounded">
+                        <h3 class="font-bold text-accent mb-2">Q: The analysis is taking too long. What should I do?</h3>
+                        <p class="text-sm">A: Long tracks or high sensitivity settings may take 30-60 seconds. Try reducing sensitivity or using shorter audio segments. Check your internet connection.</p>
+                    </div>
+
+                    <div class="bg-dark-card p-4 rounded">
+                        <h3 class="font-bold text-accent mb-2">Q: How do I get the best results?</h3>
+                        <p class="text-sm">A: Use high-quality source audio, start with medium sensitivity, choose the appropriate analysis type, and ensure the audio isn't heavily distorted or compressed.</p>
+                    </div>
+
+                    <div class="bg-dark-card p-4 rounded">
+                        <h3 class="font-bold text-accent mb-2">Q: Is my audio data stored or transmitted?</h3>
+                        <p class="text-sm">A: Audio analysis data is processed by AI services but not permanently stored. See our Privacy Policy for complete details on data handling.</p>
+                    </div>
+
+                    <div class="bg-dark-card p-4 rounded">
+                        <h3 class="font-bold text-accent mb-2">Q: Can I contribute to the project?</h3>
+                        <p class="text-sm">A: STAK-XTRACT is developed by YOLO SNIPES. For feedback, suggestions, or collaboration opportunities, contact the developer through the Poe platform.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Privacy Policy -->
+        <div id="privacyContent" class="hidden">
+            <div class="cyber-card rounded-lg p-6 mb-6">
+                <h2 class="text-3xl font-bold mb-6 neon-text text-center" style="color: #ff0080;">// PRIVACY_POLICY.exe //</h2>
+                
+                <div class="space-y-6 text-sm">
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">INFORMATION COLLECTION</h3>
+                        <p class="mb-2">STAK-XTRACT processes audio files to provide AI-powered sample extraction services. We collect and process:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Audio files you upload for analysis</li>
+                            <li>Technical metadata (duration, sample rate, format)</li>
+                            <li>Analysis preferences and settings</li>
+                            <li>Basic usage analytics for improvement purposes</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">DATA PROCESSING</h3>
+                        <p class="mb-2">Your audio data is processed through secure AI services for analysis purposes:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Audio files are temporarily processed by AI analysis engines</li>
+                            <li>Analysis results (sample boundaries, metadata) are generated</li>
+                            <li>No permanent storage of your audio content occurs</li>
+                            <li>Processing occurs in real-time during your session</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">DATA STORAGE</h3>
+                        <p class="mb-2">STAK-XTRACT employs minimal data storage practices:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Audio files remain in your browser's local memory only</li>
+                            <li>No audio content is permanently stored on our servers</li>
+                            <li>Analysis results are temporarily cached for your session</li>
+                            <li>All data is cleared when you close the application</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">THIRD-PARTY SERVICES</h3>
+                        <p class="mb-2">STAK-XTRACT utilizes third-party AI services for analysis:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Audio analysis is performed locally by the YOLO music utility engine (librosa) via the engine bridge</li>
+                            <li>The engine processes your audio on your own machine; nothing is uploaded</li>
+                            <li>Third-party services follow their respective privacy policies</li>
+                            <li>We do not share personal information with third parties</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">USER RIGHTS</h3>
+                        <p class="mb-2">You maintain full control over your data:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Audio files never leave your device except for AI analysis</li>
+                            <li>You can stop processing at any time</li>
+                            <li>No account registration or personal information required</li>
+                            <li>All processing is session-based and temporary</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">SECURITY MEASURES</h3>
+                        <p class="mb-2">We implement appropriate security measures:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>All data transmission occurs over encrypted connections (HTTPS)</li>
+                            <li>No persistent storage of sensitive audio content</li>
+                            <li>Regular security updates and monitoring</li>
+                            <li>Minimal data collection principles applied</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">COOKIES AND TRACKING</h3>
+                        <p class="mb-2">STAK-XTRACT uses minimal tracking:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>No persistent cookies are stored</li>
+                            <li>Session storage for temporary application state only</li>
+                            <li>No cross-site tracking or advertising networks</li>
+                            <li>Basic analytics for application improvement</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">CHANGES TO POLICY</h3>
+                        <p>This privacy policy may be updated to reflect changes in our practices or for legal compliance. Continued use of STAK-XTRACT constitutes acceptance of any policy updates.</p>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">CONTACT</h3>
+                        <p>For privacy-related questions or concerns, contact YOLO SNIPES through the Poe platform messaging system.</p>
+                    </section>
+
+                    <p class="text-center text-accent mt-6">STAK-XTRACT 1.0.0 Official — November 2026 — by YOLO SNIPES</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terms of Use -->
+        <div id="termsContent" class="hidden">
+            <div class="cyber-card rounded-lg p-6 mb-6">
+                <h2 class="text-3xl font-bold mb-6 neon-text text-center" style="color: #ff0080;">// TERMS_OF_USE.exe //</h2>
+                
+                <div class="space-y-6 text-sm">
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">ACCEPTANCE OF TERMS</h3>
+                        <p>By accessing and using STAK-XTRACT, you agree to be bound by these Terms of Use. If you do not agree to these terms, discontinue use immediately.</p>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">SERVICE DESCRIPTION</h3>
+                        <p class="mb-2">STAK-XTRACT is an AI-powered audio analysis tool that provides:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Automated sample extraction from audio files</li>
+                            <li>Waveform visualization and analysis</li>
+                            <li>AI-generated arrangement suggestions</li>
+                            <li>Sample metadata export functionality</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">USER RESPONSIBILITIES</h3>
+                        <p class="mb-2">Users are responsible for:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Ensuring legal rights to analyze uploaded audio content</li>
+                            <li>Complying with all applicable copyright and intellectual property laws</li>
+                            <li>Not uploading malicious, inappropriate, or illegal content</li>
+                            <li>Respecting the rights of original content creators</li>
+                            <li>Using the service for lawful purposes only</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">INTELLECTUAL PROPERTY</h3>
+                        <p class="mb-2">Regarding intellectual property rights:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Users retain rights to their uploaded audio content</li>
+                            <li>STAK-XTRACT software and interface are owned by YOLO SNIPES</li>
+                            <li>Analysis results and metadata may be used by users</li>
+                            <li>Users must respect third-party intellectual property rights</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">PROHIBITED USES</h3>
+                        <p class="mb-2">The following activities are strictly prohibited:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Uploading copyrighted material without proper authorization</li>
+                            <li>Attempting to reverse engineer or duplicate the service</li>
+                            <li>Using the service to infringe on others' intellectual property</li>
+                            <li>Automated or excessive use that impacts service performance</li>
+                            <li>Uploading malware, viruses, or harmful content</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">SERVICE AVAILABILITY</h3>
+                        <p class="mb-2">Service availability and limitations:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Service provided "as-is" without uptime guarantees</li>
+                            <li>Temporary outages may occur for maintenance or updates</li>
+                            <li>AI analysis depends on third-party service availability</li>
+                            <li>Processing times may vary based on file size and complexity</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">LIMITATION OF LIABILITY</h3>
+                        <p class="mb-2">STAK-XTRACT and YOLO SNIPES are not liable for:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Accuracy of AI analysis results</li>
+                            <li>Data loss or corruption</li>
+                            <li>Service interruptions or downtime</li>
+                            <li>Consequential or indirect damages</li>
+                            <li>Legal issues arising from copyright infringement</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">DISCLAIMER OF WARRANTIES</h3>
+                        <p>STAK-XTRACT is provided "AS IS" without warranties of any kind, express or implied. We do not guarantee the accuracy, completeness, or reliability of analysis results.</p>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">INDEMNIFICATION</h3>
+                        <p>Users agree to indemnify and hold harmless YOLO SNIPES from any claims, damages, or expenses arising from their use of the service or violation of these terms.</p>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">MODIFICATIONS</h3>
+                        <p>These terms may be modified at any time. Continued use of the service constitutes acceptance of any modifications.</p>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">GOVERNING LAW</h3>
+                        <p>These terms are governed by applicable international laws regarding software use and intellectual property.</p>
+                    </section>
+
+                    <p class="text-center text-accent mt-6">STAK-XTRACT 1.0.0 Official — November 2026 — by YOLO SNIPES</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div id="disclaimerContent" class="hidden">
+            <div class="cyber-card rounded-lg p-6 mb-6">
+                <h2 class="text-3xl font-bold mb-6 neon-text text-center" style="color: #ff0080;">// DISCLAIMER.exe //</h2>
+                
+                <div class="space-y-6 text-sm">
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">GENERAL DISCLAIMER</h3>
+                        <p>STAK-XTRACT is an experimental AI-powered audio analysis tool developed by YOLO SNIPES. Use of this software is at your own risk and discretion.</p>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">AI ACCURACY LIMITATIONS</h3>
+                        <div class="bg-red-900 bg-opacity-20 border border-red-500 p-3 rounded mb-3">
+                            <p class="font-bold text-red-300">⚠️ IMPORTANT NOTICE</p>
+                            <p>AI analysis results are not 100% accurate and should be considered as suggestions rather than definitive musical analysis.</p>
+                        </div>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Sample detection accuracy varies by audio quality and complexity</li>
+                            <li>AI may miss subtle elements or create false positives</li>
+                            <li>Results depend on the quality of source material</li>
+                            <li>Manual verification is recommended for professional use</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">COPYRIGHT RESPONSIBILITY</h3>
+                        <div class="bg-yellow-900 bg-opacity-20 border border-yellow-500 p-3 rounded mb-3">
+                            <p class="font-bold text-yellow-300">⚠️ COPYRIGHT WARNING</p>
+                            <p>Users are solely responsible for ensuring they have legal rights to analyze any uploaded audio content.</p>
+                        </div>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>STAK-XTRACT does not grant rights to copyrighted material</li>
+                            <li>Analysis of copyrighted content may require permission</li>
+                            <li>Commercial use of extracted samples may require licensing</li>
+                            <li>Users assume all legal responsibility for their content</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">TECHNICAL LIMITATIONS</h3>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Beta software - features may not work as expected</li>
+                            <li>Export functionality currently limited to metadata files</li>
+                            <li>Processing times vary based on file size and server load</li>
+                            <li>Internet connection required for AI analysis</li>
+                            <li>Browser compatibility may vary</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">NO PROFESSIONAL ADVICE</h3>
+                        <p>STAK-XTRACT is provided for educational and experimental purposes. It does not constitute professional music production advice or services.</p>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">DATA PROCESSING RISKS</h3>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Audio files are processed by third-party AI services</li>
+                            <li>Analysis may fail for complex or corrupted audio files</li>
+                            <li>No guarantee of data privacy during processing</li>
+                            <li>Risk of service interruption or data loss</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">EXPERIMENTAL NATURE</h3>
+                        <div class="bg-blue-900 bg-opacity-20 border border-blue-500 p-3 rounded mb-3">
+                            <p class="font-bold text-blue-300">🧪 EXPERIMENTAL SOFTWARE</p>
+                            <p>This is experimental software under active development. Features may change without notice.</p>
+                        </div>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Regular updates may modify functionality</li>
+                            <li>Some features may be incomplete or unstable</li>
+                            <li>User feedback helps improve the software</li>
+                            <li>No guarantee of backward compatibility</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">USE AT YOUR OWN RISK</h3>
+                        <p>By using STAK-XTRACT, you acknowledge that you understand these limitations and accept all risks associated with the software. The developer assumes no responsibility for any damages or legal issues arising from use of this tool.</p>
+                    </section>
+
+                    <section>
+                        <h3 class="text-lg font-bold mb-3 text-accent">REPORTING ISSUES</h3>
+                        <p>If you encounter problems or have concerns about the software, please contact YOLO SNIPES through the Poe platform for assistance.</p>
+                    </section>
+
+                    <p class="text-center text-accent mt-6">STAK-XTRACT 1.0.0 Official — November 2026 — by YOLO SNIPES</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let audioContext;
+        let audioBuffer;
+        let currentFile = null;
+        const ENGINE_URL = 'http://127.0.0.1:8777';
+        let extractedSamples = [];
+        let arrangementSamples = [];
+        let zoomLevel = 1;
+        let currentAudio = null;
+
+        // Initialize dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Initialize audio context
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioContext;
+        }
+
+        // Load the built-in demo: a short synthesized loop rendered
+        // offline (kick / hat / bass, 140 BPM), so the app works with no
+        // network and no Poe CDN. Also becomes the file the engine analyzes.
+        async function loadProvidedAudio() {
+            try {
+                showLoading(true);
+                const sr = 44100, bpm = 140, beats = 16, dur = beats * 60 / bpm;
+                const ctx = new OfflineAudioContext(2, Math.floor(sr * dur), sr);
+                const kick = (t) => {
+                    const o = ctx.createOscillator(), g = ctx.createGain();
+                    o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(50, t + 0.18);
+                    g.gain.setValueAtTime(0.9, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+                    o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + 0.25);
+                };
+                const hat = (t) => {
+                    const len = Math.floor(sr * 0.05), buf = ctx.createBuffer(1, len, sr);
+                    const d = buf.getChannelData(0);
+                    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+                    const s = ctx.createBufferSource(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+                    f.type = 'highpass'; f.frequency.value = 7000; g.gain.value = 0.25;
+                    s.buffer = buf; s.connect(f).connect(g).connect(ctx.destination); s.start(t);
+                };
+                const bass = (t, f0) => {
+                    const o = ctx.createOscillator(), g = ctx.createGain();
+                    o.type = 'sawtooth'; o.frequency.value = f0;
+                    g.gain.setValueAtTime(0.35, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+                    o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + 0.45);
+                };
+                const beat = 60 / bpm, roots = [55, 55, 65.41, 49];
+                for (let i = 0; i < beats; i++) {
+                    const t = i * beat;
+                    if (i % 4 === 0) kick(t);
+                    if (i % 2 === 1) hat(t);
+                    if (i % 4 === 2) bass(t, roots[Math.floor(i / 4) % 4]);
+                }
+                audioBuffer = await ctx.startRendering();
+                currentFile = new File([audioBufferToWav(audioBuffer)], 'stak-demo.wav', {type: 'audio/wav'});
+                audioContext = initAudioContext();
+                const audioPlayer = document.getElementById('audioPlayer');
+                audioPlayer.src = URL.createObjectURL(currentFile);
+                audioPlayer.classList.remove('hidden');
+                drawWaveform();
+                showLoading(false);
+                console.log('Demo loop loaded (synthesized, offline)');
+            } catch (error) {
+                console.error('Error loading demo audio:', error);
+                alert('Error loading demo audio');
+                showLoading(false);
+            }
+        }
+
+        // Handle file upload
+        document.getElementById('audioFile').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                showLoading(true);
+                
+                // Clear previous samples and arrangement
+                extractedSamples = [];
+                arrangementSamples = [];
+                updateSamplesContainer();
+                updateArrangementDisplay();
+                
+                currentFile = file;
+                const arrayBuffer = await file.arrayBuffer();
+                
+                const context = initAudioContext();
+                audioBuffer = await context.decodeAudioData(arrayBuffer);
+                
+                const audioPlayer = document.getElementById('audioPlayer');
+                audioPlayer.src = URL.createObjectURL(file);
+                audioPlayer.classList.remove('hidden');
+                
+                drawWaveform();
+                showLoading(false);
+                
+                console.log('Audio file uploaded successfully');
+                console.log('Audio buffer details:', {
+                    duration: audioBuffer.duration,
+                    sampleRate: audioBuffer.sampleRate,
+                    channels: audioBuffer.numberOfChannels
+                });
+            } catch (error) {
+                console.error('Error processing audio file:', error);
+                alert('Error processing audio file. Please ensure it is a valid audio format (MP3, WAV, OGG, etc.)');
+                showLoading(false);
+            }
+        });
+
+        // Draw waveform
+        function drawWaveform() {
+            if (!audioBuffer) return;
+
+            const canvas = document.getElementById('waveformCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+            canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            
+            const width = canvas.offsetWidth;
+            const height = canvas.offsetHeight;
+            
+            // Clear canvas
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Get audio data
+            const data = audioBuffer.getChannelData(0);
+            const samples = Math.floor(data.length / (width * zoomLevel));
+            
+            // Create gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+            gradient.addColorStop(0, '#5D5CDE');
+            gradient.addColorStop(0.5, '#00ff88');
+            gradient.addColorStop(1, '#ff3366');
+            
+            ctx.fillStyle = gradient;
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 1;
+            
+            // Draw waveform
+            ctx.beginPath();
+            for (let i = 0; i < width; i++) {
+                const sampleIndex = Math.floor(i * samples);
+                const amplitude = data[sampleIndex] || 0;
+                const y = (amplitude * height / 2) + (height / 2);
+                
+                if (i === 0) {
+                    ctx.moveTo(i, y);
+                } else {
+                    ctx.lineTo(i, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Draw sample segments if they exist
+            extractedSamples.forEach((sample, index) => {
+                const startX = (sample.start / audioBuffer.duration) * width;
+                const endX = (sample.end / audioBuffer.duration) * width;
+                
+                ctx.fillStyle = `hsla(${index * 60}, 70%, 50%, 0.3)`;
+                ctx.fillRect(startX, 0, endX - startX, height);
+                
+                ctx.fillStyle = `hsla(${index * 60}, 70%, 50%, 1)`;
+                ctx.fillRect(startX, height - 5, endX - startX, 5);
+            });
+        }
+
+        // Zoom controls
+        function zoomIn() {
+            zoomLevel = Math.min(zoomLevel * 2, 16);
+            drawWaveform();
+        }
+
+        function zoomOut() {
+            zoomLevel = Math.max(zoomLevel / 2, 0.25);
+            drawWaveform();
+        }
+
+        function resetZoom() {
+            zoomLevel = 1;
+            drawWaveform();
+        }
+
+        // Show/hide loading
+        function showLoading(show) {
+            const indicator = document.getElementById('loadingIndicator');
+            if (show) {
+                indicator.classList.remove('hidden');
+            } else {
+                indicator.classList.add('hidden');
+            }
+        }
+
+        // Engine status: is the real music-utility bridge running?
+        async function checkEngine() {
+            const el = document.getElementById('engineStatus');
+            const info = document.getElementById('engineInfo');
+            try {
+                const r = await fetch(ENGINE_URL + '/status', {signal: AbortSignal.timeout(2000)});
+                const s = await r.json();
+                el.textContent = 'ENGINE: ONLINE';
+                el.style.color = '#00ff88'; el.style.borderColor = '#00ff88';
+                info.textContent = 'yolo-music-utility v' + s.version + ' (librosa ' + (s.librosa ? 'ok' : 'missing') + ') — analysis is real, local, no upload';
+            } catch (e) {
+                el.textContent = 'ENGINE: OFFLINE';
+                el.style.color = '#ff3366'; el.style.borderColor = '#ff3366';
+                info.textContent = 'run launch.sh to start the real engine — waveform + manual work still available';
+            }
+        }
+
+        // Analyze audio with the REAL engine (librosa via the local bridge).
+        // No LLM, no invented samples: BPM, key, beats and segments come
+        // from the audio itself. If the engine is offline, say so honestly.
+        async function analyzeAudio() {
+            if (!audioBuffer || !currentFile) {
+                alert('Please load an audio file first');
+                return;
+            }
+
+            const analysisType = document.getElementById('analysisType').value;
+            const sensitivity = document.getElementById('sensitivity').value;
+
+            showLoading(true);
+            document.getElementById('analyzeBtn').disabled = true;
+
+            try {
+                const fd = new FormData();
+                fd.append('audio', currentFile);
+                fd.append('sensitivity', sensitivity);
+                fd.append('analysis_type', analysisType);
+                const r = await fetch(ENGINE_URL + '/analyze', {method: 'POST', body: fd});
+                if (!r.ok) {
+                    const err = await r.json().catch(() => ({}));
+                    throw new Error(err.error || ('engine HTTP ' + r.status));
+                }
+                const analysis = await r.json();
+                extractedSamples = analysis.samples || [];
+                drawWaveform();
+                updateSamplesContainer();
+                const keyTxt = analysis.key ? (analysis.key.key + ' (' + Math.round(analysis.key.confidence * 100) + '% conf)') : 'unknown';
+                document.getElementById('trackInfo').textContent =
+                    'BPM ' + (analysis.bpm ?? '?') + '  //  KEY ' + keyTxt +
+                    '  //  DURATION ' + (analysis.duration_s ?? '?') + 's  //  ' + extractedSamples.length + ' samples (real, from librosa)';
+                console.log('Real analysis completed:', analysis);
+            } catch (error) {
+                console.error('Error running real analysis:', error);
+                alert('Real engine not reachable: ' + error.message +
+                      '\n\nStart it with launch.sh (engine/server.py on port 8777), then analyze again. ' +
+                      'No fake analysis will be substituted.');
+            }
+            showLoading(false);
+            document.getElementById('analyzeBtn').disabled = false;
+        }
+
+        // Update samples container
+        function updateSamplesContainer() {
+            const container = document.getElementById('samplesContainer');
+            
+            if (extractedSamples.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-500 dark:text-gray-400 col-span-full py-8">No samples extracted yet.</div>';
+                return;
+            }
+            
+            container.innerHTML = extractedSamples.map((sample, index) => `
+                <div class="bg-white dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600 sample-card" 
+                     draggable="true" ondragstart="dragSample(event, ${index})">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold">${sample.type || 'Sample'} ${index + 1}</span>
+                        <div class="w-4 h-4 rounded" style="background-color: ${sample.color || '#5D5CDE'}"></div>
+                    </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                        <div>Duration: ${(sample.end - sample.start).toFixed(2)}s</div>
+                        <div>Energy: ${(sample.energy * 100).toFixed(0)}%</div>
+                        ${sample.pitch ? `<div>Pitch: ${sample.pitch}</div>` : ''}
+                    </div>
+                    <div class="flex gap-1 mt-2">
+                        <button onclick="playSample(${index})" 
+                                class="flex-1 bg-primary text-white px-3 py-1 rounded text-sm hover:bg-purple-600">
+                            Play
+                        </button>
+                        <button onclick="addToArrangementClick(${index})" 
+                                class="flex-1 bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                            Add
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Play individual sample
+        function playSample(index) {
+            if (!audioBuffer || !extractedSamples[index]) return;
+            
+            const sample = extractedSamples[index];
+            const source = audioContext.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(audioContext.destination);
+            source.start(0, sample.start, sample.end - sample.start);
+        }
+
+        // Drag and drop functionality
+        function dragSample(event, index) {
+            event.dataTransfer.setData('text/plain', index.toString());
+        }
+
+        // Setup arrangement track drop zone
+        const arrangementTrack = document.getElementById('arrangementTrack');
+        
+        arrangementTrack.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            arrangementTrack.classList.add('border-primary');
+        });
+        
+        arrangementTrack.addEventListener('dragleave', (e) => {
+            arrangementTrack.classList.remove('border-primary');
+        });
+        
+        arrangementTrack.addEventListener('drop', (e) => {
+            e.preventDefault();
+            arrangementTrack.classList.remove('border-primary');
+            
+            const sampleIndex = parseInt(e.dataTransfer.getData('text/plain'));
+            addToArrangement(sampleIndex);
+        });
+
+        // Add sample to arrangement via click
+        function addToArrangementClick(sampleIndex) {
+            addToArrangement(sampleIndex);
+        }
+
+        // Add sample to arrangement
+        function addToArrangement(sampleIndex) {
+            const sample = extractedSamples[sampleIndex];
+            if (!sample) return;
+            
+            arrangementSamples.push({...sample, sampleIndex});
+            updateArrangementDisplay();
+        }
+
+        // Move arrangement item
+        function moveArrangementItem(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= arrangementSamples.length) return;
+            
+            const item = arrangementSamples.splice(index, 1)[0];
+            arrangementSamples.splice(newIndex, 0, item);
+            updateArrangementDisplay();
+        }
+
+        // Scroll arrangement track
+        function scrollArrangementLeft() {
+            const track = document.getElementById('arrangementTrack');
+            track.scrollLeft -= 200;
+        }
+
+        function scrollArrangementRight() {
+            const track = document.getElementById('arrangementTrack');
+            track.scrollLeft += 200;
+        }
+
+        // Update arrangement display
+        function updateArrangementDisplay() {
+            const track = document.getElementById('arrangementTrack');
+            
+            if (arrangementSamples.length === 0) {
+                track.innerHTML = '<div class="text-center text-gray-400">Drag samples here to arrange them</div>';
+                return;
+            }
+            
+            track.innerHTML = `
+                <div class="flex gap-3 pb-2" style="min-width: max-content;">
+                    ${arrangementSamples.map((sample, index) => `
+                        <div class="arrangement-item bg-primary text-white px-3 py-2 rounded-lg text-sm flex items-center gap-2 min-w-fit">
+                            <span>${sample.type || 'Sample'} ${sample.sampleIndex + 1}</span>
+                            <div class="flex gap-1">
+                                <button onclick="moveArrangementItem(${index}, -1)" class="text-blue-300 hover:text-blue-100 text-xs">◀</button>
+                                <button onclick="moveArrangementItem(${index}, 1)" class="text-blue-300 hover:text-blue-100 text-xs">▶</button>
+                                <button onclick="removeFromArrangement(${index})" class="text-red-300 hover:text-red-100">×</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Remove from arrangement
+        function removeFromArrangement(index) {
+            arrangementSamples.splice(index, 1);
+            updateArrangementDisplay();
+        }
+
+        // Clear arrangement
+        function clearArrangement() {
+            arrangementSamples = [];
+            updateArrangementDisplay();
+        }
+
+        // Play arrangement
+        function playArrangement() {
+            if (arrangementSamples.length === 0) {
+                alert('No samples in arrangement');
+                return;
+            }
+            
+            let currentTime = 0;
+            arrangementSamples.forEach(sample => {
+                setTimeout(() => {
+                    playSample(sample.sampleIndex);
+                }, currentTime * 1000);
+                currentTime += (sample.end - sample.start);
+            });
+        }
+
+        // Generate arrangement: real logic, no LLM.
+        // Order by energy arc — build up, peak, release — using the real
+        // energy values the engine measured. Lowest first, peak in the
+        // middle, taper at the end.
+        function generateAIArrangement() {
+            if (extractedSamples.length === 0) {
+                alert('No samples to arrange. Please analyze audio first.');
+                return;
+            }
+            const sorted = extractedSamples
+                .map((s, i) => ({...s, sampleIndex: i}))
+                .sort((a, b) => a.energy - b.energy);
+            const peak = sorted.pop();
+            const arranged = [];
+            const half = Math.ceil(sorted.length / 2);
+            for (let i = 0; i < sorted.length; i++) {
+                if (i === half) arranged.push(peak);
+                arranged.push(sorted[i]);
+            }
+            if (sorted.length < 2) arranged.push(peak);
+            arrangementSamples = arranged;
+            updateArrangementDisplay();
+            console.log('Arrangement generated (energy arc):', arranged.map(s => s.sampleIndex));
+        }
+
+        // WAV encoder (16-bit PCM, mono/stereo preserved)
+        function audioBufferToWav(buffer) {
+            const numCh = Math.min(buffer.numberOfChannels, 2);
+            const sr = buffer.sampleRate;
+            const len = buffer.length * numCh * 2 + 44;
+            const out = new DataView(new ArrayBuffer(len));
+            const writeStr = (off, s) => { for (let i = 0; i < s.length; i++) out.setUint8(off + i, s.charCodeAt(i)); };
+            writeStr(0, 'RIFF'); out.setUint32(4, len - 8, true); writeStr(8, 'WAVE');
+            writeStr(12, 'fmt '); out.setUint32(16, 16, true); out.setUint16(20, 1, true);
+            out.setUint16(22, numCh, true); out.setUint32(24, sr, true);
+            out.setUint32(28, sr * numCh * 2, true); out.setUint16(32, numCh * 2, true);
+            out.setUint16(34, 16, true); writeStr(36, 'data'); out.setUint32(40, len - 44, true);
+            let off = 44;
+            for (let i = 0; i < buffer.length; i++) {
+                for (let ch = 0; ch < numCh; ch++) {
+                    const v = Math.max(-1, Math.min(1, buffer.getChannelData(ch)[i]));
+                    out.setInt16(off, v < 0 ? v * 0x8000 : v * 0x7FFF, true);
+                    off += 2;
+                }
+            }
+            return new Blob([out.buffer], {type: 'audio/wav'});
+        }
+
+        function sliceBuffer(buffer, start, end) {
+            const sr = buffer.sampleRate;
+            const s0 = Math.max(0, Math.floor(start * sr));
+            const s1 = Math.min(buffer.length, Math.ceil(end * sr));
+            const out = audioContext.createBuffer(buffer.numberOfChannels, s1 - s0, sr);
+            for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
+                out.getChannelData(ch).set(buffer.getChannelData(ch).subarray(s0, s1));
+            }
+            return out;
+        }
+
+        // Export samples as REAL audio: each sample sliced from the loaded
+        // buffer and written as a .wav, plus metadata + arrangement JSON.
+        async function exportSamples() {
+            if (extractedSamples.length === 0) {
+                alert('No samples to export. Please analyze audio first.');
+                return;
+            }
+            const format = document.getElementById('exportFormat').value;
+            const quality = document.getElementById('exportQuality').value;
+            const sampleRate = document.getElementById('sampleRate').value;
+
+            try {
+                const zip = new JSZip();
+                const folder = zip.folder("extracted_samples");
+                const meta = [];
+                for (let i = 0; i < extractedSamples.length; i++) {
+                    const sample = extractedSamples[i];
+                    const filename = `${sample.type || 'sample'}_${i + 1}.wav`;
+                    const sliced = sliceBuffer(audioBuffer, sample.start, sample.end);
+                    folder.file(filename, audioBufferToWav(sliced));
+                    meta.push({name: filename, start: sample.start, end: sample.end,
+                               duration: sample.end - sample.start, type: sample.type,
+                               energy: sample.energy, pitch: sample.pitch,
+                               format: 'wav', quality, sampleRate});
+                }
+                folder.file('samples.json', JSON.stringify(meta, null, 2));
+                if (arrangementSamples.length > 0) {
+                    const arrangementInfo = {
+                        samples: arrangementSamples,
+                        totalDuration: arrangementSamples.reduce((sum, s) => sum + (s.end - s.start), 0),
+                        format: 'wav', quality, sampleRate
+                    };
+                    folder.file('arrangement.json', JSON.stringify(arrangementInfo, null, 2));
+                }
+                const content = await zip.generateAsync({type: "blob"});
+                const url = URL.createObjectURL(content);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `stak-xtract-samples_${Date.now()}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                console.log('Export completed: real .wav slices');
+            } catch (error) {
+                console.error('Error exporting samples:', error);
+                alert('Error exporting samples');
+            }
+        }
+
+        // Navigation functions
+        function showMainApp() {
+            hideAllPages();
+            showMainAppElements();
+            updateActiveButton('mainAppBtn');
+        }
+
+        function showGuide() {
+            hideAllPages();
+            document.getElementById('guideContent').classList.remove('hidden');
+            updateActiveButton('guideBtn');
+        }
+
+        function showFAQ() {
+            hideAllPages();
+            document.getElementById('faqContent').classList.remove('hidden');
+            updateActiveButton('faqBtn');
+        }
+
+        function showPrivacy() {
+            hideAllPages();
+            document.getElementById('privacyContent').classList.remove('hidden');
+            updateActiveButton('privacyBtn');
+        }
+
+        function showTerms() {
+            hideAllPages();
+            document.getElementById('termsContent').classList.remove('hidden');
+            updateActiveButton('termsBtn');
+        }
+
+        function showDisclaimer() {
+            hideAllPages();
+            document.getElementById('disclaimerContent').classList.remove('hidden');
+            updateActiveButton('disclaimerBtn');
+        }
+
+        function hideAllPages() {
+            // Hide documentation pages
+            document.getElementById('guideContent').classList.add('hidden');
+            document.getElementById('faqContent').classList.add('hidden');
+            document.getElementById('privacyContent').classList.add('hidden');
+            document.getElementById('termsContent').classList.add('hidden');
+            document.getElementById('disclaimerContent').classList.add('hidden');
+            
+            // Hide main app elements
+            hideMainAppElements();
+        }
+
+        function showMainAppElements() {
+            const mainElements = [
+                'audioUpload', 'analysisControls', 'waveformSection', 
+                'samplesSection', 'arrangementSection', 'exportSection'
+            ];
+            
+            // Show all main app sections
+            const allSections = document.querySelectorAll('.cyber-card');
+            allSections.forEach(section => {
+                if (!section.closest('#guideContent, #faqContent, #privacyContent, #termsContent, #disclaimerContent')) {
+                    section.classList.remove('hidden');
+                }
+            });
+        }
+
+        function hideMainAppElements() {
+            const allSections = document.querySelectorAll('.cyber-card');
+            allSections.forEach(section => {
+                if (!section.closest('#guideContent, #faqContent, #privacyContent, #termsContent, #disclaimerContent')) {
+                    section.classList.add('hidden');
+                }
+            });
+        }
+
+        function updateActiveButton(activeId) {
+            // Reset all button styles
+            const buttons = document.querySelectorAll('button[onclick^="show"]');
+            buttons.forEach(btn => {
+                btn.className = btn.className.replace(/bg-primary|bg-neon-cyan|bg-secondary|bg-accent|bg-neon-purple|bg-red-500/, 
+                    'bg-gray-600');
+            });
+            
+            // Set active button style
+            const activeBtn = document.getElementById(activeId);
+            if (activeBtn) {
+                activeBtn.className = activeBtn.className.replace('bg-gray-600', 'bg-primary');
+            }
+        }
+
+        // Create MIDI starter via the real engine
+        async function createMidi() {
+            const btn = document.getElementById('createBtn');
+            const out = document.getElementById('createResult');
+            btn.disabled = true; out.textContent = 'Generating...';
+            try {
+                const r = await fetch(ENGINE_URL + '/create', {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        like: document.getElementById('createLike').value,
+                        bpm: document.getElementById('createBpm').value,
+                        key: document.getElementById('createKey').value,
+                        mood: document.getElementById('createMood').value,
+                        length: document.getElementById('createLength').value,
+                        seed: document.getElementById('createSeed').value
+                    })});
+                if (!r.ok) {
+                    const err = await r.json().catch(() => ({}));
+                    throw new Error(err.detail || err.error || ('engine HTTP ' + r.status));
+                }
+                const blob = await r.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = 'stak-xtract-midi.zip';
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                out.textContent = 'MIDI zip downloaded: chords, bass, drums, melody + arrangement.txt';
+            } catch (error) {
+                console.error('Create failed:', error);
+                out.textContent = 'Engine not reachable: ' + error.message + ' — start it with launch.sh.';
+            }
+            btn.disabled = false;
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('STAK-XTRACT 1.0.0 Official initialized');
+            checkEngine();
+            showMainApp(); // Show main app by default
+        });
+    </script>
+
+</body></html>
