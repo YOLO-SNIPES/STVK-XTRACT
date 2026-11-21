@@ -1,0 +1,6 @@
+# STAK-XTRACT engine dependencies (already in ~/workspace/music-utility/venv).
+# The bridge references that venv; this file documents what it needs.
+librosa==1.0.0
+numpy
+faster-whisper
+mido
